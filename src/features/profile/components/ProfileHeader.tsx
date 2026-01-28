@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Award, Stethoscope, Sparkles } from "lucide-react"
+import { Mail, Phone, MapPin, Award, Store, Sparkles } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import type { ProfileData } from "../types"
@@ -13,7 +13,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       {/* Animated background gradient */}
       <div className="absolute inset-0 bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-to) opacity-90" />
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMzLjMxNCAwIDYgMi42ODYgNiA2cy0yLjY4NiA2LTYgNi02LTIuNjg2LTYtNiAyLjY4Ni02IDYtNiIgc3Ryb2tlPSJyZ2JhKDI1NSwgMjU1LCAyNTUsIDAuMSkiIHN0cm9rZS13aWR0aD0iMiIvPjwvZz48L3N2Zz4=')] opacity-20" />
-      
+
       <CardContent className="relative p-8">
         <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
           {/* Avatar with animated ring */}
@@ -27,7 +27,7 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
               </div>
             </div>
             <div className="absolute -bottom-2 -right-2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center">
-              <Stethoscope className="w-6 h-6 text-[rgb(var(--brand-primary))]" />
+              <Store className="w-6 h-6 text-[rgb(var(--brand-primary))]" />
             </div>
           </div>
 

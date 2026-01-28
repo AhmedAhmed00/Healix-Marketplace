@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ColumnDef } from '@tanstack/react-table'
 import { Transaction } from '../types'
 import { Badge } from '@/components/ui/badge'
@@ -122,9 +123,15 @@ export const transactionTableColumns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => {
       const transactionId = row.getValue('transactionId') as string
       const description = row.original.description
+      const id = row.original.id
       return (
         <div>
-          <p className="font-medium text-sm">{transactionId}</p>
+          <Link
+            to={`/payments/transactions/${id}`}
+            className="font-medium text-sm text-[#1974BB] dark:text-[#3BC1CF] hover:underline"
+          >
+            {transactionId}
+          </Link>
           {description && (
             <p className="text-xs text-muted-foreground truncate max-w-[200px]">{description}</p>
           )}

@@ -12,18 +12,18 @@ export function ProfessionalSection({ profile }: ProfessionalSectionProps) {
     <Card className="relative overflow-hidden border-t-4 border-t-[rgb(var(--brand-primary))] shadow-lg hover:shadow-xl transition-shadow duration-300">
       {/* Decorative background */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-to) opacity-5 rounded-full blur-3xl -translate-y-32 translate-x-32" />
-      
+
       <CardHeader>
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-to) shadow-lg shadow-[rgb(var(--brand-primary))]/30 flex items-center justify-center">
             <GraduationCap className="w-6 h-6 text-white" />
           </div>
           <CardTitle className="text-2xl bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-to) bg-clip-text text-transparent">
-            Professional Information
+            Business Information
           </CardTitle>
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* License Info */}
         <div className="flex items-start gap-4 p-4 rounded-xl bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-800/50 dark:to-slate-900/50 border border-slate-200 dark:border-slate-700">
@@ -32,7 +32,7 @@ export function ProfessionalSection({ profile }: ProfessionalSectionProps) {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
-              License Number
+              Business Registration
             </p>
             <p className="text-lg font-bold text-[rgb(var(--brand-secondary))] dark:text-[rgb(var(--brand-primary))] font-mono">
               {profile.licenseNumber}
@@ -51,7 +51,7 @@ export function ProfessionalSection({ profile }: ProfessionalSectionProps) {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">
-              Years of Experience
+              Years Selling Online
             </p>
             <p className="text-lg font-bold text-[#1974BB] dark:text-[#3BC1CF]">
               {profile.yearsOfExperience} Years

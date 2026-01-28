@@ -106,7 +106,7 @@ export const InfiniteSelect = React.memo(({
                     variant="popover"
                     role="combobox"
                     aria-expanded={open}
-                    className={cn("justify-between w-full! font-normal")}
+                    className={cn("justify-between w-full! font-normal shadow-none!")}
                     disabled={disabled}
                 >
                     <span className="truncate">
@@ -127,9 +127,10 @@ export const InfiniteSelect = React.memo(({
                         <CommandGroup >
                             {items.map((item, index) => {
                                 const isLastItem = index === items.length - 1;
+                                // Use a composite key to guarantee uniqueness even if values repeat
                                 return (
                                     <CommandItem
-                                        key={item.value}
+                                        key={`${item.value}-${index}`}
                                         value={item.label}
                                         onSelect={() => {
                                             onValueChange?.(item.value);

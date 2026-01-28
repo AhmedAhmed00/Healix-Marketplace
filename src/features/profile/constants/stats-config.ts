@@ -16,26 +16,26 @@ export interface StatConfig extends GradientConfig {
 export const PROFILE_STATS_CONFIG: StatConfig[] = [
   {
     icon: Briefcase,
-    label: 'Total Bookings',
+    label: 'Total Orders',
     key: 'totalBookings',
     ...PRIMARY_GRADIENT,
   },
   {
     icon: Calendar,
-    label: 'This Month',
+    label: 'Orders This Month',
     key: 'thisMonth',
     ...SECONDARY_GRADIENT,
   },
   {
     icon: DollarSign,
-    label: 'Total Revenue',
+    label: 'Total GMV',
     key: 'totalRevenue',
     ...PRIMARY_GRADIENT,
     prefix: '$',
   },
   {
     icon: TrendingUp,
-    label: 'Services',
+    label: 'Active Listings',
     key: 'services',
     ...PRIMARY_GRADIENT,
   },

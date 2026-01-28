@@ -3,20 +3,18 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { DevTool } from "@hookform/devtools"
 
 import { useAddProductForm } from '../hooks/use-add-product-form'
 import { BasicInfoSection } from '../components/form-sections/BasicInfoSection'
 import { PricingSection } from '../components/form-sections/PricingSection'
 import { InventorySection } from '../components/form-sections/InventorySection'
-import { AdditionalInfoSection } from '../components/form-sections/AdditionalInfoSection'
 
 export function AddProductPage() {
   const navigate = useNavigate()
   const { form, handleSubmit, isSubmitting } = useAddProductForm()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6  mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button
@@ -42,7 +40,7 @@ export function AddProductPage() {
         <CardHeader>
           <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF]">Product Information</CardTitle>
           <CardDescription>
-            Fill in all the required details to add a new product
+            Fill in the details to add a new product
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -56,10 +54,6 @@ export function AddProductPage() {
 
               <div className="border-t pt-8">
                 <InventorySection form={form} />
-              </div>
-
-              <div className="border-t pt-8">
-                <AdditionalInfoSection form={form} />
               </div>
 
               {/* Action Buttons */}
@@ -79,7 +73,6 @@ export function AddProductPage() {
                   {isSubmitting ? 'Adding Product...' : 'Add Product'}
                 </Button>
               </div>
-              <DevTool control={form.control} placement="top-right" />
             </form>
           </Form>
         </CardContent>

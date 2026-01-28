@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { addProductSchema, type AddProductFormData, type AddProductFormInput, productCategories, productStatuses } from '../schemas/product-schema'
+import { addProductSchema, type AddProductFormData, type AddProductFormInput, productCategories, saleTypes } from '../schemas/product-schema'
 
 interface AddProductDialogProps {
   onSubmit: (data: AddProductFormData) => void
@@ -44,18 +43,10 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
       name: '',
       description: '',
       category: undefined,
+      brand: '',
+      saleType: 'outright sale',
       price: '',
-      compareAtPrice: '',
-      cost: '',
-      sku: '',
-      barcode: '',
       stock: '',
-      status: 'draft',
-      tags: '',
-      weight: '',
-      length: '',
-      width: '',
-      height: '',
     },
   })
 
@@ -64,20 +55,10 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
       name: data.name,
       description: data.description,
       category: data.category,
+      brand: data.brand || undefined,
+      saleType: data.saleType,
       price: Number(data.price),
-      compareAtPrice: data.compareAtPrice ? Number(data.compareAtPrice) : undefined,
-      cost: Number(data.cost),
-      sku: data.sku,
-      barcode: data.barcode || undefined,
       stock: Number(data.stock),
-      status: data.status,
-      tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
-      weight: data.weight ? Number(data.weight) : undefined,
-      dimensions: data.length && data.width && data.height ? {
-        length: Number(data.length),
-        width: Number(data.width),
-        height: Number(data.height),
-      } : undefined,
     }
     onSubmit(transformedData)
     form.reset()
@@ -149,16 +130,16 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-semibold">Category *</FormLabel>
+                    <FormLabel className="text-sm font-semibold">Category*</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="focus:ring-[#3BC1CF]">
+                        <SelectTrigger className="focus:ring-[#3BC1CF] shadow-none!">
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         {productCategories.map((category) => (
-                          <SelectItem key={category} value={category}>
+                          <SelectItem className="shadow-none!" key={category} value={category}>
                             {category}
                           </SelectItem>
                         ))}
@@ -169,23 +150,44 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
                 )}
               />
 
-              {/* Status */}
+              {/* Brand */}
               <FormField
                 control={form.control}
-                name="status"
+                name="brand"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-semibold">Status *</FormLabel>
+                    <FormLabel className="text-sm font-semibold">Brand (Optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., Sony, Apple"
+                        className="focus-visible:ring-[#3BC1CF]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              {/* Sale Type */}
+              <FormField
+                control={form.control}
+                name="saleType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-semibold">Sale Type *</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger className="focus:ring-[#3BC1CF]">
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue placeholder="Select sale type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {productStatuses.map((status) => (
-                          <SelectItem key={status} value={status}>
-                            {status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ')}
+                        {saleTypes.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type.charAt(0).toUpperCase() + type.slice(1)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -194,9 +196,7 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div className="grid grid-cols-3 gap-4">
               {/* Price */}
               <FormField
                 control={form.control}
@@ -219,71 +219,6 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
                 )}
               />
 
-              {/* Compare At Price */}
-              <FormField
-                control={form.control}
-                name="compareAtPrice"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Compare At Price ($)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Cost */}
-              <FormField
-                control={form.control}
-                name="cost"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Cost ($) *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* SKU */}
-              <FormField
-                control={form.control}
-                name="sku"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">SKU *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g., PROD-001"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               {/* Stock */}
               <FormField
                 control={form.control}
@@ -297,128 +232,6 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
                         placeholder="0"
                         min="0"
                         step="1"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Barcode */}
-            <FormField
-              control={form.control}
-              name="barcode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-semibold">Barcode</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Optional barcode"
-                      className="focus-visible:ring-[#3BC1CF]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Tags */}
-            <FormField
-              control={form.control}
-              name="tags"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-semibold">Tags</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="e.g., electronics, premium, bundle (comma-separated)"
-                      className="focus-visible:ring-[#3BC1CF]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription className="text-xs">
-                    Separate tags with commas
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Weight and Dimensions */}
-            <div className="grid grid-cols-4 gap-4">
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Weight (kg)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0.0"
-                        min="0"
-                        step="0.1"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="length"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Length (cm)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        min="0"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="width"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Width (cm)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        min="0"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="height"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Height (cm)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        min="0"
                         className="focus-visible:ring-[#3BC1CF]"
                         {...field}
                       />

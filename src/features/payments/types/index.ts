@@ -12,6 +12,8 @@ export interface Transaction {
   date: Date
   description?: string
   notes?: string
+  user?: string
+  referenceNumber?: string
 }
 
 // Keep Payment as alias for backward compatibility

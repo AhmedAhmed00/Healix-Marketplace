@@ -12,47 +12,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-export const getStatusConfig = (status: Product['status']) => {
-  switch (status) {
-    case 'active':
-      return {
-        label: 'Active',
-        bgColor: 'bg-green-50 dark:bg-green-900/20',
-        color: 'text-green-700 dark:text-green-400',
-        borderColor: 'border-green-300 dark:border-green-800',
-      }
-    case 'inactive':
-      return {
-        label: 'Inactive',
-        bgColor: 'bg-gray-50 dark:bg-gray-900/20',
-        color: 'text-gray-700 dark:text-gray-400',
-        borderColor: 'border-gray-300 dark:border-gray-800',
-      }
-    case 'out_of_stock':
-      return {
-        label: 'Out of Stock',
-        bgColor: 'bg-red-50 dark:bg-red-900/20',
-        color: 'text-red-700 dark:text-red-400',
-        borderColor: 'border-red-300 dark:border-red-800',
-      }
-    case 'draft':
-      return {
-        label: 'Draft',
-        bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
-        color: 'text-yellow-700 dark:text-yellow-400',
-        borderColor: 'border-yellow-300 dark:border-yellow-800',
-      }
-    default:
-      return {
-        label: status,
-        bgColor: 'bg-gray-50 dark:bg-gray-900/20',
-        color: 'text-gray-700 dark:text-gray-400',
-        borderColor: 'border-gray-300 dark:border-gray-800',
-      }
-  }
-}
-
 export const productColumns: ColumnDef<Product>[] = [
+  {
+    accessorKey: 'image',
+    header: 'Image',
+    cell: ({ row }) => {
+      const image = row.getValue('image') as string
+      return (
+        <div className="w-12 h-12 rounded-md overflow-hidden bg-muted">
+          {image ? (
+            <img src={image} alt="Product" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-[10px]">
+              No Image
+            </div>
+          )}
+        </div>
+      )
+    }
+  },
   {
     accessorKey: 'name',
     header: ({ column }) => <SortableHeader column={column}>Product Name</SortableHeader>,
@@ -74,6 +52,14 @@ export const productColumns: ColumnDef<Product>[] = [
     },
   },
   {
+    accessorKey: 'brand',
+    header: ({ column }) => <SortableHeader column={column}>Brand</SortableHeader>,
+    cell: ({ row }) => {
+      const brand = row.getValue('brand') as string
+      return <div className="text-sm">{brand || 'N/A'}</div>
+    },
+  },
+  {
     accessorKey: 'category',
     header: ({ column }) => <SortableHeader column={column}>Category</SortableHeader>,
     cell: ({ row }) => {
@@ -86,28 +72,28 @@ export const productColumns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: 'sku',
-    header: ({ column }) => <SortableHeader column={column}>SKU</SortableHeader>,
+    accessorKey: 'saleType',
+    header: ({ column }) => <SortableHeader column={column}>Sale Type</SortableHeader>,
     cell: ({ row }) => {
-      const sku = row.getValue('sku') as string
-      return <div className="font-mono text-sm">{sku}</div>
+      const saleType = row.getValue('saleType') as string
+      const isLease = saleType === 'lease'
+      return (
+        <Badge className={isLease ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}>
+          {saleType.charAt(0).toUpperCase() + saleType.slice(1)}
+        </Badge>
+      )
     },
   },
   {
     accessorKey: 'price',
     header: ({ column }) => <SortableHeader column={column}>Price</SortableHeader>,
     cell: ({ row }) => {
-      const product = row.original
+      const price = row.getValue('price') as number
+      const saleType = row.original.saleType
       return (
-        <div>
-          <div className="font-semibold text-[#1974BB] dark:text-[#3BC1CF]">
-            ${product.price.toLocaleString()}
-          </div>
-          {product.compareAtPrice && (
-            <div className="text-xs text-muted-foreground line-through">
-              ${product.compareAtPrice.toLocaleString()}
-            </div>
-          )}
+        <div className="font-semibold text-[#1974BB] dark:text-[#3BC1CF]">
+          ${price.toLocaleString()}
+          {saleType === 'lease' && <span className="text-[10px] ml-1">/mo</span>}
         </div>
       )
     },
@@ -123,27 +109,6 @@ export const productColumns: ColumnDef<Product>[] = [
           {stock.toLocaleString()}
         </div>
       )
-    },
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => <SortableHeader column={column}>Status</SortableHeader>,
-    cell: ({ row }) => {
-      const status = row.getValue('status') as Product['status']
-      const config = getStatusConfig(status)
-      return (
-        <Badge className={`${config.bgColor} ${config.color} ${config.borderColor} border-2 font-semibold text-sm px-3 py-1`}>
-          {config.label}
-        </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: 'seller',
-    header: ({ column }) => <SortableHeader column={column}>Seller</SortableHeader>,
-    cell: ({ row }) => {
-      const seller = row.getValue('seller') as string
-      return <div className="text-sm">{seller}</div>
     },
   },
   {

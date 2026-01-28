@@ -5,6 +5,7 @@ export interface Order {
   orderNumber: string
   clientName: string
   clientEmail: string
+  clientPhone?: string
   clientAvatar?: string
   product: string
   productId: string

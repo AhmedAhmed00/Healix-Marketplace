@@ -1,12 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
-import { ArrowLeft, Edit, Package, DollarSign, Box, Tag, Ruler, Weight } from 'lucide-react'
+import { ArrowLeft, Edit, Package, DollarSign, Box, Tag, Building2, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { mockProducts } from '../data/mockProducts'
-import { getStatusConfig } from '../components/ProductTableColumns'
 
 export function ViewProductPage() {
   const { id } = useParams<{ id: string }>()
@@ -35,8 +34,6 @@ export function ViewProductPage() {
     )
   }
 
-  const statusConfig = getStatusConfig(product.status)
-
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -55,7 +52,7 @@ export function ViewProductPage() {
               {product.name}
             </h1>
             <p className="text-muted-foreground mt-2">
-              Product Details & Information
+              Detailed breakdown of product specifications
             </p>
           </div>
         </div>
@@ -69,211 +66,124 @@ export function ViewProductPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Information */}
+        {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Basic Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF]">Product Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-semibold text-muted-foreground">Description</label>
-                <p className="mt-1 text-sm">{product.description}</p>
-              </div>
-              <Separator />
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">Category</label>
-                  <div className="mt-1">
-                    <Badge variant="outline" className="bg-[#3BC1CF]/10 text-[#1974BB] border-[#3BC1CF]/20">
-                      {product.category}
-                    </Badge>
-                  </div>
+          {/* Product Image & Info */}
+          <Card className="overflow-hidden">
+            <div className="aspect-video w-full bg-muted relative">
+              {product.image ? (
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                  <Package className="w-12 h-12 opacity-20" />
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">Status</label>
-                  <div className="mt-1">
-                    <Badge className={`${statusConfig.bgColor} ${statusConfig.color} ${statusConfig.borderColor} border-2 font-semibold text-sm px-3 py-1`}>
-                      {statusConfig.label}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              {product.tags && product.tags.length > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">Tags</label>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {product.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </>
               )}
+            </div>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl text-[#1974BB] dark:text-[#3BC1CF]">Description</CardTitle>
+                <Badge variant="outline" className="bg-[#3BC1CF]/10 text-[#1974BB] border-[#3BC1CF]/20">
+                  {product.category}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                {product.description}
+              </p>
             </CardContent>
           </Card>
 
-          {/* Pricing */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF] flex items-center gap-2">
-                <DollarSign className="w-5 h-5" />
-                Pricing
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">Price</label>
-                  <p className="mt-1 text-2xl font-bold text-[#1974BB] dark:text-[#3BC1CF]">
+          {/* Details Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
+                  <DollarSign className="w-5 h-5" />
+                  Pricing & Sale
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground font-medium">Sale Type</span>
+                  <Badge className={product.saleType === 'lease' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}>
+                    {product.saleType.charAt(0).toUpperCase() + product.saleType.slice(1)}
+                  </Badge>
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground font-medium">Price</span>
+                  <span className="text-2xl font-bold text-[#1974BB] dark:text-[#3BC1CF]">
                     ${product.price.toLocaleString()}
-                  </p>
+                    {product.saleType === 'lease' && <span className="text-sm ml-1">/mo</span>}
+                  </span>
                 </div>
-                {product.compareAtPrice && (
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">Compare At Price</label>
-                    <p className="mt-1 text-xl font-semibold text-muted-foreground line-through">
-                      ${product.compareAtPrice.toLocaleString()}
-                    </p>
-                  </div>
-                )}
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">Cost</label>
-                  <p className="mt-1 text-lg font-semibold">
-                    ${product.cost.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Inventory */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF] flex items-center gap-2">
-                <Box className="w-5 h-5" />
-                Inventory
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">SKU</label>
-                  <p className="mt-1 font-mono text-sm">{product.sku}</p>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
+                  <Box className="w-5 h-5" />
+                  Inventory
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground font-medium">Stock Status</span>
+                  <Badge variant={product.stock > 0 ? 'default' : 'destructive'}>
+                    {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                  </Badge>
                 </div>
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">Stock Quantity</label>
-                  <p className={`mt-1 text-lg font-semibold ${product.stock < 10 ? 'text-red-600 dark:text-red-400' : ''}`}>
-                    {product.stock.toLocaleString()}
-                  </p>
+                <Separator />
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground font-medium">Current Quantity</span>
+                  <span className="text-2xl font-bold">{product.stock.toLocaleString()}</span>
                 </div>
-                {product.barcode && (
-                  <div>
-                    <label className="text-sm font-semibold text-muted-foreground">Barcode</label>
-                    <p className="mt-1 font-mono text-sm">{product.barcode}</p>
-                  </div>
-                )}
-                <div>
-                  <label className="text-sm font-semibold text-muted-foreground">Inventory Value</label>
-                  <p className="mt-1 text-lg font-semibold text-[#1974BB] dark:text-[#3BC1CF]">
-                    ${(product.price * product.stock).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Seller Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF]">Seller</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
+                <Building2 className="w-5 h-5" />
+                Brand Information
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div>
-                <label className="text-sm font-semibold text-muted-foreground">Seller Name</label>
-                <p className="mt-1 font-medium">{product.seller}</p>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Manufacturer / Brand</label>
+                <p className="mt-1 text-lg font-semibold">{product.brand || 'No Brand Specified'}</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Physical Properties */}
-          {(product.weight || product.dimensions) && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF] flex items-center gap-2">
-                  <Ruler className="w-5 h-5" />
-                  Physical Properties
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {product.weight && (
-                  <div className="flex items-center gap-2">
-                    <Weight className="w-4 h-4 text-muted-foreground" />
-                    <div>
-                      <label className="text-sm font-semibold text-muted-foreground">Weight</label>
-                      <p className="text-sm">{product.weight} kg</p>
-                    </div>
-                  </div>
-                )}
-                {product.dimensions && (
-                  <div className="flex items-center gap-2">
-                    <Ruler className="w-4 h-4 text-muted-foreground" />
-                    <div>
-                      <label className="text-sm font-semibold text-muted-foreground">Dimensions</label>
-                      <p className="text-sm">
-                        {product.dimensions.length} × {product.dimensions.width} × {product.dimensions.height} cm
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Dates */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF]">Dates</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
+                <Calendar className="w-5 h-5" />
+                History
+              </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-semibold text-muted-foreground">Created</label>
-                <p className="text-sm">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Created At</label>
+                <p className="text-sm font-medium mt-1">
                   {new Date(product.createdAt).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(product.createdAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                    month: 'long', day: 'numeric', year: 'numeric'
                   })}
                 </p>
               </div>
               <Separator />
               <div>
-                <label className="text-sm font-semibold text-muted-foreground">Last Updated</label>
-                <p className="text-sm">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Last Updated</label>
+                <p className="text-sm font-medium mt-1">
                   {new Date(product.updatedAt).toLocaleDateString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(product.updatedAt).toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                    month: 'long', day: 'numeric', year: 'numeric'
                   })}
                 </p>
               </div>

@@ -1,8 +1,10 @@
 import { useState, useMemo } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { OrdersHeader, OrdersTabs, OrdersList } from './components'
 import { mockOrders } from './data/mockOrders'
 import { filterOrders, sortOrdersByDate, countOrdersByStatus } from './utils'
 import type { OrderStatus } from './types'
+import { ViewOrderPage } from './pages/ViewOrderPage'
 
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -23,25 +25,33 @@ export default function OrdersPage() {
   }, [])
 
   return (
-    <div className="space-y-6">
-      <OrdersHeader />
-      
-      <OrdersTabs
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        counts={counts}
-      >
-        <OrdersList
-          orders={filteredOrders}
-          emptyMessage={
-            searchQuery
-              ? 'No orders match your search'
-              : `No ${activeTab === 'all' ? '' : activeTab} orders found`
-          }
-        />
-      </OrdersTabs>
-    </div>
+    <Routes>
+      <Route
+        index
+        element={
+          <div className="space-y-6">
+            <OrdersHeader />
+
+            <OrdersTabs
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              counts={counts}
+            >
+              <OrdersList
+                orders={filteredOrders}
+                emptyMessage={
+                  searchQuery
+                    ? 'No orders match your search'
+                    : `No ${activeTab === 'all' ? '' : activeTab} orders found`
+                }
+              />
+            </OrdersTabs>
+          </div>
+        }
+      />
+      <Route path="view/:id" element={<ViewOrderPage />} />
+    </Routes>
   )
 }

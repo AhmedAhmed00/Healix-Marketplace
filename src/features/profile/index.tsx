@@ -9,12 +9,12 @@ export default function ProfilePage() {
     <div className="space-y-8  ">
       {/* Hero Header */}
       <ProfileHeader profile={mockProfileData} />
-      {/* Practice Statistics */}
+      {/* Store Statistics */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-1.5 h-8 bg-linear-to-b from-(--brand-gradient-from) to-(--brand-gradient-to) rounded-full" />
           <h2 className="text-2xl font-bold text-[rgb(var(--brand-secondary))] dark:text-[rgb(var(--brand-primary))]">
-            Practice Statistics
+            Store Statistics
           </h2>
         </div>
         <StatisticsSection statistics={mockProfileData.statistics} />

@@ -17,26 +17,37 @@ export function PaymentsPage() {
       </div>
 
       {/* Main Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
-          <TabsTrigger value="overview" className="gap-2">
-            <Wallet className="h-4 w-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="history" className="gap-2">
-            <Receipt className="h-4 w-4" />
-            Transactions History
-          </TabsTrigger>
-          <TabsTrigger value="withdrawals" className="gap-2">
-            <CreditCard className="h-4 w-4" />
-            Withdrawals
-          </TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="wallet" className="space-y-6">
+        <div className="flex items-center justify-between w-full gap-4">
+          <TabsList className="justify-start h-auto p-1 bg-transparent rounded-xl flex-1 flex-wrap gap-2">
+            <TabsTrigger
+              value="wallet"
+              className="relative border border-border px-6 py-3 rounded-lg font-semibold gap-2 transition-all data-[state=active]:bg-linear-to-r data-[state=active]:from-(--brand-gradient-from) data-[state=active]:to-(--brand-gradient-to) data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-accent"
+            >
+              <Wallet className="h-4 w-4" />
+              <span>Wallet</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="history"
+              className="relative border border-border px-6 py-3 rounded-lg font-semibold gap-2 transition-all data-[state=active]:bg-linear-to-r data-[state=active]:from-(--brand-gradient-from) data-[state=active]:to-(--brand-gradient-to) data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-accent"
+            >
+              <Receipt className="h-4 w-4" />
+              <span>Transactions History</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="withdrawals"
+              className="relative border border-border px-6 py-3 rounded-lg font-semibold gap-2 transition-all data-[state=active]:bg-linear-to-r data-[state=active]:from-(--brand-gradient-from) data-[state=active]:to-(--brand-gradient-to) data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-accent"
+            >
+              <CreditCard className="h-4 w-4" />
+              <span>Withdrawals</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="overview" className="space-y-6">
-          <OverviewTab 
-            stats={paymentStats} 
-            recentTransactions={mockPayments} 
+        <TabsContent value="wallet" className="space-y-6">
+          <OverviewTab
+            stats={paymentStats}
+            recentTransactions={mockPayments}
           />
         </TabsContent>
 
@@ -45,7 +56,7 @@ export function PaymentsPage() {
         </TabsContent>
 
         <TabsContent value="withdrawals" className="space-y-6">
-          <WithdrawalsTab 
+          <WithdrawalsTab
             withdrawals={mockWithdrawals}
             availableBalance={paymentStats.availableBalance}
             bankAccounts={mockBankAccounts}

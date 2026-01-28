@@ -10,42 +10,26 @@ export function useAddProductForm() {
         resolver: zodResolver(addProductSchema),
         defaultValues: {
             name: '',
-            description: '',
             category: undefined,
+            description: '',
+            image: undefined,
+            saleType: 'outright sale',
             price: '',
-            compareAtPrice: '',
-            cost: '',
-            sku: '',
-            barcode: '',
             stock: '',
-            status: 'draft',
-            tags: '',
-            weight: '',
-            length: '',
-            width: '',
-            height: '',
+            brand: '',
         },
     })
 
     const handleSubmit = async (data: AddProductFormInput) => {
         const transformedData: AddProductFormData = {
             name: data.name,
-            description: data.description,
             category: data.category,
+            description: data.description,
+            image: data.image,
+            saleType: data.saleType,
             price: Number(data.price),
-            compareAtPrice: data.compareAtPrice ? Number(data.compareAtPrice) : undefined,
-            cost: Number(data.cost),
-            sku: data.sku,
-            barcode: data.barcode || undefined,
             stock: Number(data.stock),
-            status: data.status,
-            tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : undefined,
-            weight: data.weight ? Number(data.weight) : undefined,
-            dimensions: data.length && data.width && data.height ? {
-                length: Number(data.length),
-                width: Number(data.width),
-                height: Number(data.height),
-            } : undefined,
+            brand: data.brand || undefined,
         }
 
         console.log('New product data:', transformedData)

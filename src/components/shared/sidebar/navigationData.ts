@@ -10,6 +10,7 @@ import {
   FolderTree,
   Megaphone,
   Users,
+  HeadphonesIcon,
 } from "lucide-react"
 import type { NavSection } from "./types"
 
@@ -71,6 +72,11 @@ export const navigationSections: NavSection[] = [
         title: "Sales Analytics",
         url: "/sales-analytics",
         icon: BarChart3,
+      },
+      {
+        title: "Support",
+        url: "/support",
+        icon: HeadphonesIcon,
       },
     ],
   },

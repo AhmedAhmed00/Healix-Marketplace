@@ -58,48 +58,40 @@ export function OverviewTab({ stats, recentTransactions }: OverviewTabProps) {
   }, [recentTransactions, statusFilter])
   const statsCards = [
     {
-      title: 'Total Earnings',
-      value: `$${stats.totalEarnings.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-      icon: DollarSign,
-      colorVariant: 'primary' as const,
-      trend: {
-        value: 12.5,
-        isPositive: true,
-        label: 'from last month'
-      }
-    },
-    {
-      title: 'Available Balance',
+      title: 'Current Balance',
       value: `$${stats.availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       icon: Wallet,
+      colorVariant: 'primary' as const,
+      description: 'Money available in your wallet'
+    },
+    {
+      title: 'Today\'s Revenue',
+      value: `$${(stats.totalEarnings * 0.01).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+      icon: DollarSign,
       colorVariant: 'success' as const,
-      description: 'Ready to withdraw'
+      description: 'Revenue generated today'
+    },
+    {
+      title: 'Monthly Revenue',
+      value: `$${(stats.totalEarnings * 0.15).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
+      icon: TrendingUp,
+      colorVariant: 'secondary' as const,
+      description: 'Revenue for this month'
     },
     {
       title: 'Pending Amount',
       value: `$${stats.pendingAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       icon: Clock,
       colorVariant: 'warning' as const,
-      description: 'Processing payments'
-    },
-    {
-      title: 'This Month',
-      value: `$${(stats.totalEarnings * 0.15).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
-      icon: TrendingUp,
-      colorVariant: 'secondary' as const,
-      trend: {
-        value: 8.2,
-        isPositive: true,
-        label: 'vs last month'
-      }
+      description: 'Processing payouts and holds'
     }
   ]
 
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <StatsCardGrid 
-        cards={statsCards} 
+      <StatsCardGrid
+        cards={statsCards}
         columns={{ default: 1, sm: 2, lg: 4 }}
       />
 
@@ -145,52 +137,52 @@ export function OverviewTab({ stats, recentTransactions }: OverviewTabProps) {
               </div>
             ) : (
               filteredTransactions.slice(0, 8).map((transaction) => (
-              <div
-                key={transaction.id}
-                className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex items-center gap-3 flex-1">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback className="bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-to) text-white">
-                      {transaction.patientName.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-sm">{transaction.patientName}</p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {transaction.description}
-                    </p>
+                <div
+                  key={transaction.id}
+                  className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3 flex-1">
+                    <Avatar className="h-10 w-10">
+                      <AvatarFallback className="bg-linear-to-br from-(--brand-gradient-from) to-(--brand-gradient-to) text-white">
+                        {transaction.patientName.split(' ').map(n => n[0]).join('')}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-sm">{transaction.patientName}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {transaction.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-right hidden sm:block">
+                      <p className="text-xs text-muted-foreground">
+                        {getPaymentMethodLabel(transaction.paymentMethod)}
+                      </p>
+                    </div>
+                    <div className="text-right min-w-[80px]">
+                      <p className="font-semibold text-sm">
+                        ${transaction.amount.toFixed(2)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {transaction.date.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                    <Badge
+                      className={cn(
+                        'text-xs font-medium capitalize min-w-[80px] justify-center',
+                        getStatusVariant(transaction.status)
+                      )}
+                    >
+                      {transaction.status}
+                    </Badge>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-4">
-                  <div className="text-right hidden sm:block">
-                    <p className="text-xs text-muted-foreground">
-                      {getPaymentMethodLabel(transaction.paymentMethod)}
-                    </p>
-                  </div>
-                  <div className="text-right min-w-[80px]">
-                    <p className="font-semibold text-sm">
-                      ${transaction.amount.toFixed(2)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {transaction.date.toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric' 
-                      })}
-                    </p>
-                  </div>
-                  <Badge 
-                    className={cn(
-                      'text-xs font-medium capitalize min-w-[80px] justify-center',
-                      getStatusVariant(transaction.status)
-                    )}
-                  >
-                    {transaction.status}
-                  </Badge>
-                </div>
-              </div>
-            ))
+              ))
             )}
           </div>
         </CardContent>

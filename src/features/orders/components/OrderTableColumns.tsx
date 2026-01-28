@@ -1,59 +1,50 @@
 import { ColumnDef } from '@tanstack/react-table'
+import { Link } from 'react-router-dom'
 import { Order } from '../types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { SortableHeader } from '@/components/shared/table'
-import { MoreHorizontal, Eye } from 'lucide-react'
+import { MoreHorizontal, Eye, RefreshCcw, XCircle } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { getStatusConfig } from '../constants/order-status'
 
 export const orderColumns: ColumnDef<Order>[] = [
   {
     accessorKey: 'orderNumber',
-    header: ({ column }) => <SortableHeader column={column} title="Order Number" />,
+    header: ({ column }) => <SortableHeader column={column}>Order Number</SortableHeader>,
     cell: ({ row }) => {
       const order = row.original
       return (
-        <div className="font-medium text-[#1974BB] dark:text-[#3BC1CF]">
-          {order.orderNumber}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'clientName',
-    header: ({ column }) => <SortableHeader column={column} title="Client" />,
-    cell: ({ row }) => {
-      const order = row.original
-      return (
-        <div>
-          <div className="font-medium">{order.clientName}</div>
-          <div className="text-xs text-muted-foreground">{order.clientEmail}</div>
-        </div>
+        <Link
+          to={`/orders/view/${order.id}`}
+          className="font-medium text-[#1974BB] dark:text-[#3BC1CF] cursor-pointer hover:underline"
+        >
+          {row.getValue('orderNumber')}
+        </Link>
       )
     },
   },
   {
     accessorKey: 'product',
-    header: ({ column }) => <SortableHeader column={column} title="Product" />,
+    header: ({ column }) => <SortableHeader column={column}>Product Name</SortableHeader>,
     cell: ({ row }) => {
       const order = row.original
       return (
-        <div>
-          <div className="font-medium">{order.product}</div>
-          <div className="text-xs text-muted-foreground">Qty: {order.quantity}</div>
+        <div className="max-w-[200px] truncate font-medium">
+          {order.product}
         </div>
       )
     },
   },
   {
     accessorKey: 'amount',
-    header: ({ column }) => <SortableHeader column={column} title="Amount" />,
+    header: ({ column }) => <SortableHeader column={column}>Price</SortableHeader>,
     cell: ({ row }) => {
       const amount = row.getValue('amount') as number
       return (
@@ -65,45 +56,14 @@ export const orderColumns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => <SortableHeader column={column} title="Status" />,
+    header: ({ column }) => <SortableHeader column={column}>Status</SortableHeader>,
     cell: ({ row }) => {
       const status = row.getValue('status') as Order['status']
       const config = getStatusConfig(status)
       return (
         <Badge className={`${config.bgColor} ${config.color} ${config.borderColor} border-2 font-semibold text-sm px-3 py-1`}>
-          {config.icon} {config.label}
+          {config.icon} <span className="ml-1.5">{config.label}</span>
         </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: 'paymentStatus',
-    header: ({ column }) => <SortableHeader column={column} title="Payment" />,
-    cell: ({ row }) => {
-      const paymentStatus = row.getValue('paymentStatus') as Order['paymentStatus']
-      const statusColors: Record<Order['paymentStatus'], string> = {
-        completed: 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
-        pending: 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800',
-        failed: 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800',
-        refunded: 'bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-900/20 dark:text-gray-400 dark:border-gray-800',
-      }
-      return (
-        <Badge className={`${statusColors[paymentStatus]} border-2 font-semibold text-xs px-2 py-0.5`}>
-          {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
-        </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: 'createdAt',
-    header: ({ column }) => <SortableHeader column={column} title="Date" />,
-    cell: ({ row }) => {
-      const date = new Date(row.getValue('createdAt'))
-      return (
-        <div className="text-sm">
-          <div>{date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-          <div className="text-xs text-muted-foreground">{date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-        </div>
       )
     },
   },
@@ -111,6 +71,8 @@ export const orderColumns: ColumnDef<Order>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const order = row.original
+      const isCancellable = order.status !== 'cancelled' && order.status !== 'delivered'
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -119,11 +81,26 @@ export const orderColumns: ColumnDef<Order>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Eye className="mr-2 h-4 w-4" />
-              View Details
+          <DropdownMenuContent align="end" className="w-[180px]">
+            <DropdownMenuItem asChild>
+              <Link to={`/orders/view/${order.id}`} className="flex items-center cursor-pointer">
+                <Eye className="mr-2 h-4 w-4" />
+                View Details
+              </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => { /* TODO: Open update status modal */ }}>
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Update Status
+            </DropdownMenuItem>
+            {isCancellable && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Cancel Order
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       )

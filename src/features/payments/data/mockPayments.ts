@@ -47,7 +47,9 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
     date: new Date('2026-01-15T10:30:00'),
     description: 'General Consultation',
-    notes: 'Payment received for consultation service'
+    notes: 'Payment received for consultation service',
+    user: 'John Smith',
+    referenceNumber: 'REF-2026-001',
   },
   {
     id: '2',
@@ -57,7 +59,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'insurance',
     status: 'pending',
     date: new Date('2026-01-14T14:20:00'),
-    description: 'Physical Therapy Session'
+    description: 'Physical Therapy Session',
+    user: 'Sarah Johnson',
+    referenceNumber: 'REF-2026-002',
   },
   {
     id: '3',
@@ -67,7 +71,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'cash',
     status: 'completed',
     date: new Date('2026-01-14T09:15:00'),
-    description: 'Follow-up Appointment'
+    description: 'Follow-up Appointment',
+    user: 'Michael Brown',
+    referenceNumber: 'REF-2026-003',
   },
   {
     id: '4',
@@ -78,7 +84,9 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
     date: new Date('2026-01-13T16:45:00'),
     description: 'Monthly withdrawal to bank account ****1234',
-    notes: 'Processed successfully'
+    notes: 'Processed successfully',
+    user: 'John Smith',
+    referenceNumber: 'REF-2026-004',
   },
   {
     id: '5',
@@ -89,7 +97,9 @@ export const mockTransactions: Transaction[] = [
     status: 'failed',
     date: new Date('2026-01-13T11:30:00'),
     description: 'MRI Scan',
-    notes: 'Card declined - insufficient funds'
+    notes: 'Card declined - insufficient funds',
+    user: 'David Wilson',
+    referenceNumber: 'REF-2026-005',
   },
   {
     id: '6',
@@ -99,7 +109,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'insurance',
     status: 'pending',
     date: new Date('2026-01-12T15:20:00'),
-    description: 'Lab Tests'
+    description: 'Lab Tests',
+    user: 'Jessica Martinez',
+    referenceNumber: 'REF-2026-006',
   },
   {
     id: '7',
@@ -109,7 +121,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'credit-card',
     status: 'completed',
     date: new Date('2026-01-12T10:00:00'),
-    description: 'X-Ray Examination'
+    description: 'X-Ray Examination',
+    user: 'Robert Taylor',
+    referenceNumber: 'REF-2026-007',
   },
   {
     id: '8',
@@ -119,7 +133,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'bank-transfer',
     status: 'pending',
     date: new Date('2026-01-11T13:45:00'),
-    description: 'Equipment purchase withdrawal'
+    description: 'Equipment purchase withdrawal',
+    user: 'John Smith',
+    referenceNumber: 'REF-2026-008',
   },
   {
     id: '9',
@@ -129,7 +145,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'bank-transfer',
     status: 'pending',
     date: new Date('2026-01-11T09:30:00'),
-    description: 'Surgery Consultation'
+    description: 'Surgery Consultation',
+    user: 'Sarah Johnson',
+    referenceNumber: 'REF-2026-009',
   },
   {
     id: '10',
@@ -139,7 +157,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'credit-card',
     status: 'completed',
     date: new Date('2026-01-10T14:15:00'),
-    description: 'Prescription Refill'
+    description: 'Prescription Refill',
+    user: 'Michael Brown',
+    referenceNumber: 'REF-2026-010',
   },
   {
     id: '11',
@@ -149,7 +169,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'insurance',
     status: 'completed',
     date: new Date('2026-01-09T11:00:00'),
-    description: 'Cardiology Checkup'
+    description: 'Cardiology Checkup',
+    user: 'Emily Davis',
+    referenceNumber: 'REF-2026-011',
   },
   {
     id: '12',
@@ -159,7 +181,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'credit-card',
     status: 'pending',
     date: new Date('2026-01-08T16:30:00'),
-    description: 'Dermatology Treatment'
+    description: 'Dermatology Treatment',
+    user: 'David Wilson',
+    referenceNumber: 'REF-2026-012',
   },
   {
     id: '13',
@@ -170,7 +194,9 @@ export const mockTransactions: Transaction[] = [
     status: 'completed',
     date: new Date('2026-01-08T09:45:00'),
     description: 'Year-end withdrawal to bank account ****5678',
-    notes: 'Completed'
+    notes: 'Completed',
+    user: 'John Smith',
+    referenceNumber: 'REF-2026-013',
   },
   {
     id: '14',
@@ -181,7 +207,9 @@ export const mockTransactions: Transaction[] = [
     status: 'failed',
     date: new Date('2026-01-07T14:00:00'),
     description: 'Orthopedic Surgery',
-    notes: 'Transfer rejected by bank'
+    notes: 'Transfer rejected by bank',
+    user: 'Sarah Johnson',
+    referenceNumber: 'REF-2026-014',
   },
   {
     id: '15',
@@ -191,7 +219,9 @@ export const mockTransactions: Transaction[] = [
     paymentMethod: 'credit-card',
     status: 'completed',
     date: new Date('2026-01-06T10:15:00'),
-    description: 'Eye Examination'
+    description: 'Eye Examination',
+    user: 'Michael Brown',
+    referenceNumber: 'REF-2026-015',
   },
 ]
 
