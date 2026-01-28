@@ -11,12 +11,16 @@ const mostPaidOrdersData: MostPaidOrder[] = [
   { id: '6', productName: 'Gaming Console Bundle', clientName: 'Lisa Anderson', amount: 1150, date: '2026-01-15', status: 'shipped' },
   { id: '7', productName: 'Fitness Equipment Set', clientName: 'Robert Brown', amount: 980, date: '2026-01-14', status: 'delivered' },
   { id: '8', productName: 'Kitchen Appliance Pack', clientName: 'Jennifer Taylor', amount: 850, date: '2026-01-13', status: 'confirmed' },
+  { id: '9', productName: '4K OLED TV', clientName: 'Anthony Rogers', amount: 3100, date: '2026-01-12', status: 'delivered' },
+  { id: '10', productName: 'Gaming Laptop Pro', clientName: 'Natalie Diaz', amount: 2750, date: '2026-01-11', status: 'processing' },
+  { id: '11', productName: 'Smartphone Ultra Max', clientName: 'Kevin Lee', amount: 1550, date: '2026-01-10', status: 'shipped' },
+  { id: '12', productName: 'Ergonomic Office Chair', clientName: 'Olivia Green', amount: 920, date: '2026-01-09', status: 'confirmed' },
 ]
 
 const getStatusColor = (status: string) => {
   switch (status) {
     case 'delivered':
-      return '#10b981'
+      return '#1974BB'
     case 'shipped':
       return '#60a5fa'
     case 'processing':
@@ -35,43 +39,41 @@ export function MostPaidOrdersChart() {
     .slice(0, 8)
     .map((order, index) => ({
       ...order,
-      shortName: order.productName.length > 20 
-        ? `${order.productName.substring(0, 20)}...` 
+      shortName: order.productName.length > 20
+        ? `${order.productName.substring(0, 20)}...`
         : order.productName,
       index: index + 1,
     }))
 
   return (
-    <Card className="border-t-4 border-t-[#3BC1CF]">
+    <Card className="">
       <CardHeader>
         <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF]">Most Paid Orders</CardTitle>
         <CardDescription>Top orders by payment amount</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={350}>
-          <BarChart 
-            data={sortedData} 
-            layout="vertical"
-            margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+        <ResponsiveContainer width="100%" height={500}>
+          <BarChart
+            data={sortedData}
+            margin={{ top: 5, right: 30, left: 10, bottom: 40 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-slate-700" />
-            <XAxis 
+            <XAxis
+              dataKey="shortName"
+              stroke="#6b7280"
+              className="dark:stroke-slate-400"
+              style={{ fontSize: '11px' }}
+              tickMargin={10}
+            />
+            <YAxis
               type="number"
               stroke="#6b7280"
               className="dark:stroke-slate-400"
               style={{ fontSize: '12px' }}
               tickFormatter={(value) => `$${value.toLocaleString()}`}
             />
-            <YAxis 
-              type="category"
-              dataKey="shortName"
-              stroke="#6b7280"
-              className="dark:stroke-slate-400"
-              style={{ fontSize: '11px' }}
-              width={90}
-            />
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
@@ -81,9 +83,11 @@ export function MostPaidOrdersChart() {
               labelFormatter={(label) => `Product: ${label}`}
               cursor={{ fill: 'rgba(59, 193, 207, 0.1)' }}
             />
-            <Bar 
-              dataKey="amount" 
-              radius={[0, 8, 8, 0]}
+            <Bar
+              dataKey="amount"
+              radius={[8, 8, 0, 0]}
+              barSize={30}
+              maxBarSize={30}
             >
               {sortedData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={getStatusColor(entry.status)} />
@@ -91,24 +95,7 @@ export function MostPaidOrdersChart() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <div className="mt-4 flex flex-wrap gap-4 justify-center text-xs text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#10b981]"></div>
-            <span>Delivered</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#60a5fa]"></div>
-            <span>Shipped</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#1974BB]"></div>
-            <span>Processing</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-[#3BC1CF]"></div>
-            <span>Confirmed</span>
-          </div>
-        </div>
+
       </CardContent>
     </Card>
   )

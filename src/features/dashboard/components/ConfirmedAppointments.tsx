@@ -8,7 +8,7 @@ interface ConfirmedAppointmentsProps {
 
 export function ConfirmedAppointments({ appointments }: ConfirmedAppointmentsProps) {
   return (
-    <Card className="border-t-4 border-t-[#1974BB] dark:border-t-[#3BC1CF]">
+    <Card className="">
       <CardHeader>
         <div className="flex items-center gap-2">
           <div className="p-2 rounded-lg bg-linear-to-br from-[#1974BB] to-[#3BC1CF] 
@@ -64,7 +64,7 @@ export function ConfirmedAppointments({ appointments }: ConfirmedAppointmentsPro
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <div className="flex items-center gap-1 text-xs text-[#1974BB] dark:text-[#3BC1CF] mb-1">
                     <DollarSign className="h-3 w-3" />

@@ -13,7 +13,7 @@ export interface GradientConfig {
  */
 export const PRIMARY_GRADIENT: GradientConfig = {
   gradient: 'from-(--brand-gradient-from) to-(--brand-gradient-to)',
-  bgGradient: 'from-[#E0F4F7] to-[#D4EEF8] dark:from-[#0F2730]/30 dark:to-[#0A1C28]/30',
+  bgGradient: 'from-[#E0F4F7]/30 to-[#D4EEF8]/30 dark:from-[#0F2730]/30 dark:to-[#0A1C28]/30',
 }
 
 /**

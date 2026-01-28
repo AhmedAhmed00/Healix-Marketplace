@@ -18,26 +18,26 @@ export function CategoryStatsCards({ stats }: CategoryStatsCardsProps) {
       title: 'Active Categories',
       value: stats.active.toLocaleString(),
       icon: CheckCircle,
-      colorVariant: 'success',
+      colorVariant: 'primary',
     },
     {
       title: 'Inactive Categories',
       value: stats.inactive.toLocaleString(),
       icon: XCircle,
-      colorVariant: 'danger',
+      colorVariant: 'primary',
     },
     {
       title: 'Total Products',
       value: stats.totalProducts.toLocaleString(),
       icon: Package,
-      colorVariant: 'secondary',
+      colorVariant: 'primary',
     },
   ]
 
   return (
-    <StatsCardGrid 
-      cards={cards} 
-      columns={{ default: 1, sm: 2, lg: 4 }} 
+    <StatsCardGrid
+      cards={cards}
+      columns={{ default: 1, sm: 2, lg: 4 }}
     />
   )
 }

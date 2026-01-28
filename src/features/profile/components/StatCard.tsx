@@ -32,23 +32,23 @@ export function StatCard({ icon: Icon, label, value, gradient, prefix }: StatCar
 
         {/* Value */}
         <div className="flex flex-col items-end ">
-        <div className="flex items-baseline justify-end gap-1">
+          <div className="flex items-baseline justify-end gap-1">
 
-{prefix && (
-  <span className={`text-2xl font-bold bg-linear-to-br ${gradient} bg-clip-text text-transparent`}>
-    {prefix}
-  </span>
-)}
-<span className={`text-3xl font-bold bg-linear-to-br ${gradient} bg-clip-text text-transparent`}>
-  {formattedValue}
-</span>
-</div>
+            {prefix && (
+              <span className={`text-2xl font-bold bg-linear-to-br ${gradient} bg-clip-text text-transparent`}>
+                {prefix}
+              </span>
+            )}
+            <span className={`text-3xl font-bold bg-linear-to-br ${gradient} bg-clip-text text-transparent`}>
+              {formattedValue}
+            </span>
+          </div>
           <div className="flex-1  flex items-center justify-end">
             <p className="text-md  font-semibold text-muted-foreground   ">
               {label}
             </p>
           </div>
-      
+
 
 
         </div>

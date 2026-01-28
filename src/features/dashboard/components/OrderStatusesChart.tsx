@@ -13,7 +13,7 @@ const orderStatusData = [
 
 export function OrderStatusesChart() {
   return (
-    <Card className="border-t-4 border-t-[#1974BB]">
+    <Card className="">
       <CardHeader>
         <CardTitle className="text-[#1974BB] dark:text-[#3BC1CF]">Order Statuses</CardTitle>
         <CardDescription>Order status breakdown by day of the week</CardDescription>
@@ -22,19 +22,19 @@ export function OrderStatusesChart() {
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={orderStatusData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-slate-700" />
-            <XAxis 
-              dataKey="day" 
+            <XAxis
+              dataKey="day"
               stroke="#6b7280"
               className="dark:stroke-slate-400"
               style={{ fontSize: '12px' }}
             />
-            <YAxis 
+            <YAxis
               stroke="#6b7280"
               className="dark:stroke-slate-400"
               style={{ fontSize: '12px' }}
             />
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
@@ -42,7 +42,7 @@ export function OrderStatusesChart() {
               }}
               cursor={{ fill: 'rgba(59, 193, 207, 0.1)' }}
             />
-            <Legend 
+            <Legend
               wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }}
               iconType="circle"
             />

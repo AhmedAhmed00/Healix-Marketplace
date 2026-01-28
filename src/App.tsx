@@ -68,7 +68,6 @@ function AppRoutes() {
                   <Route path="/categories/*" element={<CategoriesPage />} />
                   <Route path="/categories/view/:id" element={<ViewCategoryPage />} />
                   <Route path="/support/*" element={<SupportPage />} />
-
                   <Route path="/ads/*" element={<AdsPage />} />
                   <Route path="/roles-and-employees/*" element={<RolesAndEmployeesPage />} />
                   <Route path="/settings/*" element={<SettingsPage />} />

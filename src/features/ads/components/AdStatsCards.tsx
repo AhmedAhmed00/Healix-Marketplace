@@ -18,32 +18,15 @@ export function AdStatsCards({ stats }: AdStatsCardsProps) {
       title: 'Active Ads',
       value: stats.active.toLocaleString(),
       icon: CheckCircle,
-      colorVariant: 'success',
+      colorVariant: 'primary',
     },
     {
       title: 'Total Budget',
       value: `$${stats.totalBudget.toLocaleString()}`,
       icon: DollarSign,
-      colorVariant: 'secondary',
-    },
-    {
-      title: 'Total Spent',
-      value: `$${stats.totalSpent.toLocaleString()}`,
-      icon: DollarSign,
-      colorVariant: 'warning',
-    },
-    {
-      title: 'Total Impressions',
-      value: stats.totalImpressions.toLocaleString(),
-      icon: Eye,
-      colorVariant: 'info',
-    },
-    {
-      title: 'Total Clicks',
-      value: stats.totalClicks.toLocaleString(),
-      icon: MousePointerClick,
       colorVariant: 'primary',
     },
+
   ]
 
   return (

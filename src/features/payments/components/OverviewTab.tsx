@@ -61,28 +61,30 @@ export function OverviewTab({ stats, recentTransactions }: OverviewTabProps) {
       title: 'Current Balance',
       value: `$${stats.availableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       icon: Wallet,
-      colorVariant: 'primary' as const,
-      description: 'Money available in your wallet'
+
+      colorVariant: 'primary',
+      description: 'Money available in your wallet',
+
     },
     {
       title: 'Today\'s Revenue',
       value: `$${(stats.totalEarnings * 0.01).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       icon: DollarSign,
-      colorVariant: 'success' as const,
+      colorVariant: 'primary',
       description: 'Revenue generated today'
     },
     {
       title: 'Monthly Revenue',
       value: `$${(stats.totalEarnings * 0.15).toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       icon: TrendingUp,
-      colorVariant: 'secondary' as const,
+      colorVariant: 'primary',
       description: 'Revenue for this month'
     },
     {
       title: 'Pending Amount',
       value: `$${stats.pendingAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}`,
       icon: Clock,
-      colorVariant: 'warning' as const,
+      colorVariant: 'primary' as const,
       description: 'Processing payouts and holds'
     }
   ]

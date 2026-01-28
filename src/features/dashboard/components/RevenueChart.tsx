@@ -14,7 +14,7 @@ const revenueData = [
 
 export function RevenueChart() {
   return (
-    <Card className="border-t-4 border-t-[#3BC1CF]">
+    <Card className="">
       <CardHeader>
         <CardTitle className="text-lg md:text-xl text-[#1974BB] dark:text-[#3BC1CF]">Revenue Overview</CardTitle>
         <CardDescription className="text-xs md:text-sm">Monthly revenue and order trends</CardDescription>
@@ -24,24 +24,24 @@ export function RevenueChart() {
           <AreaChart data={revenueData}>
             <defs>
               <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3BC1CF" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#3BC1CF" stopOpacity={0}/>
+                <stop offset="5%" stopColor="#3BC1CF" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#3BC1CF" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" className="dark:stroke-slate-700" />
-            <XAxis 
-              dataKey="month" 
+            <XAxis
+              dataKey="month"
               stroke="#6b7280"
               className="dark:stroke-slate-400"
               style={{ fontSize: '12px' }}
             />
-            <YAxis 
+            <YAxis
               stroke="#6b7280"
               className="dark:stroke-slate-400"
               style={{ fontSize: '12px' }}
             />
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 backgroundColor: 'white',
                 border: '1px solid #e5e7eb',
                 borderRadius: '8px',
@@ -49,13 +49,13 @@ export function RevenueChart() {
               }}
               labelStyle={{ color: '#1974BB', fontWeight: 600 }}
             />
-            <Area 
-              type="monotone" 
-              dataKey="revenue" 
-              stroke="#3BC1CF" 
+            <Area
+              type="monotone"
+              dataKey="revenue"
+              stroke="#3BC1CF"
               strokeWidth={3}
-              fillOpacity={1} 
-              fill="url(#colorRevenue)" 
+              fillOpacity={1}
+              fill="url(#colorRevenue)"
             />
           </AreaChart>
         </ResponsiveContainer>

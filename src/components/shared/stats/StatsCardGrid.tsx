@@ -2,9 +2,9 @@ import { StatsCard } from './StatsCard'
 import { StatsCardGridProps } from './types'
 import { cn } from '@/lib/utils'
 
-export function StatsCardGrid({ 
-  cards, 
-  columns = { default: 1, md: 2, lg: 5 } 
+export function StatsCardGrid({
+  cards,
+  columns = { default: 1, md: 2, lg: 5 }
 }: StatsCardGridProps) {
   const gridClasses = cn(
     'grid gap-4',

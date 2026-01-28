@@ -1,6 +1,6 @@
 import { DashboardStats as Stats } from '../types'
 import { StatsCardGrid, StatsCardProps } from '@/components/shared/stats'
-import { 
+import {
   DollarSign,
   ShoppingCart,
   Users,
@@ -28,7 +28,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
       title: 'Total Orders',
       value: stats.totalOrders.toLocaleString(),
       icon: ShoppingCart,
-      colorVariant: 'secondary',
+      colorVariant: 'primary',
       trend: {
         value: stats.ordersChange,
         label: 'vs last month',
@@ -39,7 +39,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
       title: 'Total Clients',
       value: stats.totalClients.toLocaleString(),
       icon: Users,
-      colorVariant: 'success',
+      colorVariant: 'primary',
       trend: {
         value: stats.clientsChange,
         label: 'new this month',
@@ -50,7 +50,7 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
       title: 'Total Products',
       value: stats.totalProducts.toLocaleString(),
       icon: Package,
-      colorVariant: 'info',
+      colorVariant: 'primary',
       trend: {
         value: stats.productsChange,
         label: 'vs last month',
@@ -60,9 +60,9 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
   ]
 
   return (
-    <StatsCardGrid 
-      cards={cards} 
-      columns={{ default: 1, sm: 2, lg: 4 }} 
+    <StatsCardGrid
+      cards={cards}
+      columns={{ default: 1, sm: 2, lg: 4 }}
     />
   )
 }

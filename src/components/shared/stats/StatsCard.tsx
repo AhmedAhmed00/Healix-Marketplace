@@ -19,7 +19,7 @@ const colorConfig: Record<ColorVariant, {
     bgGradient: GRADIENTS.primary.bgGradient,
     iconBg: `bg-linear-to-br ${GRADIENTS.primary.gradient}`,
     iconColor: 'text-white',
-    border: 'border-l-[rgb(var(--brand-primary))]',
+    border: '',
     shadow: 'hover:shadow-[rgb(var(--brand-primary))]/20',
     text: GRADIENTS.primary.gradient,
   },
@@ -117,7 +117,7 @@ export function StatsCard({
   return (
     <Card
       className={cn(
-        'relative overflow-hidden border-l-3 transition-all duration-300 ',
+        'relative overflow-hidden  transition-all duration-300 ',
         'hover:shadow-lg ',
         colors.border,
         colors.shadow
@@ -131,14 +131,14 @@ export function StatsCard({
         )}
       />
 
-      <CardHeader className="relative p-3 py-4 flex flex-row justify-between items-center space-y-0 pb-0">
+      <CardHeader className="relative  py-4 flex flex-row justify-between items-center space-y-0 pb-0">
         <div className="space-y-1">
           <p className="text-[17px] font-medium text-muted-foreground">{title}</p>
         </div>
         {Icon && (
           <div
             className={cn(
-              'p-2.5 rounded-sm flex items-center justify-center',
+              'p-2.5 rounded-full flex items-center justify-center',
               colors.iconBg
             )}
           >
@@ -151,7 +151,7 @@ export function StatsCard({
         <div className="space-y-2">
           <div
             className={cn(
-              'text-4xl font-bold bg-linear-to-r bg-clip-text text-transparent',
+              'text-4xl  font-bold bg-linear-to-r bg-clip-text text-transparent',
               colors.text
             )}
           >

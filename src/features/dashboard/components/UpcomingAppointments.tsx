@@ -23,7 +23,7 @@ export function UpcomingAppointments({ appointments }: UpcomingAppointmentsProps
   }
 
   return (
-    <Card className="border-t-4 border-t-[rgb(var(--brand-primary))] dark:border-t-[rgb(var(--brand-primary))]/80">
+    <Card className="dark:border-t-[rgb(var(--brand-primary))]/80">
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -34,8 +34,8 @@ export function UpcomingAppointments({ appointments }: UpcomingAppointmentsProps
               Recent orders and their status
             </CardDescription>
           </div>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
             className="w-fit hover:bg-[rgb(var(--brand-primary))]/10 hover:text-[rgb(var(--brand-secondary))] 
               dark:hover:bg-[rgb(var(--brand-primary))]/20 dark:hover:text-[rgb(var(--brand-primary))]"
@@ -74,7 +74,7 @@ export function UpcomingAppointments({ appointments }: UpcomingAppointmentsProps
                     shadow-lg shadow-[rgb(var(--brand-primary))]/20">
                     {appointment.clientName.split(' ').map(n => n[0]).join('')}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <h4 className="font-semibold text-sm sm:text-base text-[rgb(var(--brand-secondary))] dark:text-[rgb(var(--brand-primary))] truncate">
@@ -84,11 +84,11 @@ export function UpcomingAppointments({ appointments }: UpcomingAppointmentsProps
                         {appointment.status}
                       </Badge>
                     </div>
-                    
+
                     <p className="text-xs sm:text-sm text-muted-foreground mb-2">
                       {appointment.product}
                     </p>
-                    
+
                     <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3 text-[rgb(var(--brand-secondary))]/60 dark:text-[rgb(var(--brand-primary))]/60" />
@@ -112,7 +112,7 @@ export function UpcomingAppointments({ appointments }: UpcomingAppointmentsProps
                     </div>
                   </div>
                 </div>
-                
+
                 <Button
                   variant="ghost"
                   size="sm"

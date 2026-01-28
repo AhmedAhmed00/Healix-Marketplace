@@ -18,26 +18,26 @@ export function ProductStatsCards({ stats }: ProductStatsCardsProps) {
       title: 'Active Products',
       value: stats.active.toLocaleString(),
       icon: CheckCircle,
-      colorVariant: 'success',
+      colorVariant: 'primary',
     },
     {
       title: 'Out of Stock',
       value: stats.outOfStock.toLocaleString(),
       icon: AlertCircle,
-      colorVariant: 'danger',
+      colorVariant: 'primary',
     },
     {
       title: 'Total Inventory Value',
       value: `$${stats.totalValue.toLocaleString()}`,
       icon: DollarSign,
-      colorVariant: 'secondary',
+      colorVariant: 'primary',
     },
   ]
 
   return (
-    <StatsCardGrid 
-      cards={cards} 
-      columns={{ default: 1, sm: 2, lg: 4 }} 
+    <StatsCardGrid
+      cards={cards}
+      columns={{ default: 1, sm: 2, lg: 4 }}
     />
   )
 }
