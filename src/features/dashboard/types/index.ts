@@ -8,6 +8,7 @@ export interface Order {
   status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   seller: string
   amount: number
+  city?: string
 }
 
 export interface DashboardStats {
@@ -42,5 +43,6 @@ export interface MostPaidOrder {
   amount: number
   date: string
   status: string
+  city?: string
 }
 

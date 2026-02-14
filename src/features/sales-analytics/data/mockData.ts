@@ -1,5 +1,7 @@
 import { SalesData, ProductSales, SalesByCategory, SalesByRegion, SalesMetrics } from '../types'
 
+const CITIES = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] as const
+
 export const salesMetrics: SalesMetrics = {
   totalRevenue: 456800,
   totalOrders: 1247,
@@ -9,7 +11,64 @@ export const salesMetrics: SalesMetrics = {
   ordersChange: 15.2,
 }
 
-export const salesData: SalesData[] = [
+export const salesMetricsByCity: Record<string, SalesMetrics> = {
+  'New York': {
+    totalRevenue: 185000,
+    totalOrders: 512,
+    averageOrderValue: 361.3,
+    conversionRate: 3.5,
+    revenueChange: 14.2,
+    ordersChange: 18.1,
+  },
+  'Los Angeles': {
+    totalRevenue: 142000,
+    totalOrders: 398,
+    averageOrderValue: 356.8,
+    conversionRate: 3.1,
+    revenueChange: 11.8,
+    ordersChange: 12.5,
+  },
+  'Chicago': {
+    totalRevenue: 98000,
+    totalOrders: 267,
+    averageOrderValue: 367.0,
+    conversionRate: 2.9,
+    revenueChange: 9.5,
+    ordersChange: 10.2,
+  },
+  'Houston': {
+    totalRevenue: 42800,
+    totalOrders: 118,
+    averageOrderValue: 362.7,
+    conversionRate: 2.8,
+    revenueChange: 8.2,
+    ordersChange: 7.8,
+  },
+  'Phoenix': {
+    totalRevenue: 31000,
+    totalOrders: 92,
+    averageOrderValue: 336.9,
+    conversionRate: 2.6,
+    revenueChange: 6.5,
+    ordersChange: 5.2,
+  },
+}
+
+function withCity<T extends Record<string, unknown>>(
+  rows: T[],
+  city: (typeof CITIES)[number],
+  revenueScale: number
+): (T & { city: string })[] {
+  return rows.map((row) => ({
+    ...row,
+    city,
+    ...('revenue' in row && typeof row.revenue === 'number'
+      ? { revenue: Math.round((row.revenue as number) * revenueScale) }
+      : {}),
+  }))
+}
+
+const salesDataBase: SalesData[] = [
   { date: '2026-01-01', revenue: 12500, orders: 42, averageOrderValue: 297.6 },
   { date: '2026-01-02', revenue: 15200, orders: 51, averageOrderValue: 298.0 },
   { date: '2026-01-03', revenue: 13800, orders: 48, averageOrderValue: 287.5 },
@@ -27,6 +86,14 @@ export const salesData: SalesData[] = [
   { date: '2026-01-15', revenue: 25600, orders: 85, averageOrderValue: 301.2 },
 ]
 
+export const salesData: (SalesData & { city?: string })[] = [
+  ...withCity(salesDataBase, 'New York', 0.38),
+  ...withCity(salesDataBase, 'Los Angeles', 0.28),
+  ...withCity(salesDataBase, 'Chicago', 0.20),
+  ...withCity(salesDataBase, 'Houston', 0.09),
+  ...withCity(salesDataBase, 'Phoenix', 0.05),
+]
+
 export const topProducts: ProductSales[] = [
   { id: '1', productName: 'Premium Electronics Bundle', category: 'Electronics', sales: 245, revenue: 24500, orders: 245, growth: 15.2 },
   { id: '2', productName: 'Designer Furniture Set', category: 'Furniture', sales: 189, revenue: 18900, orders: 189, growth: 12.5 },
@@ -38,7 +105,7 @@ export const topProducts: ProductSales[] = [
   { id: '8', productName: 'Kitchen Appliance Pack', category: 'Home', sales: 85, revenue: 8500, orders: 85, growth: 7.8 },
 ]
 
-export const salesByCategory: SalesByCategory[] = [
+const salesByCategoryBase: SalesByCategory[] = [
   { category: 'Electronics', revenue: 145000, orders: 485, percentage: 31.7 },
   { category: 'Furniture', revenue: 98000, orders: 327, percentage: 21.5 },
   { category: 'Smart Home', revenue: 85000, orders: 283, percentage: 18.6 },
@@ -46,6 +113,25 @@ export const salesByCategory: SalesByCategory[] = [
   { category: 'Sports', revenue: 42000, orders: 140, percentage: 9.2 },
   { category: 'Home', revenue: 24800, orders: 83, percentage: 5.4 },
 ]
+
+const cityScale: Record<string, number> = {
+  'New York': 0.38,
+  'Los Angeles': 0.28,
+  'Chicago': 0.2,
+  'Houston': 0.09,
+  Phoenix: 0.05,
+}
+
+export const salesByCategory: (SalesByCategory & { city?: string })[] = (
+  ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] as const
+).flatMap((city) =>
+  salesByCategoryBase.map((r) => ({
+    ...r,
+    city,
+    revenue: Math.round(r.revenue * cityScale[city]),
+    orders: Math.round(r.orders * cityScale[city]),
+  }))
+)
 
 export const salesByRegion: SalesByRegion[] = [
   { region: 'North America', revenue: 185000, orders: 617, growth: 15.2 },

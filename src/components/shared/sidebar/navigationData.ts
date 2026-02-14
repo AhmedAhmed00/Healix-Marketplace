@@ -1,14 +1,9 @@
 import {
   Home,
   CreditCard,
-  UserCircle,
   Cog,
-  BarChart3,
   ShoppingCart,
-  Receipt,
   Package,
-  FolderTree,
-  Megaphone,
   Users,
   HeadphonesIcon,
 } from "lucide-react"
@@ -29,24 +24,9 @@ export const navigationSections: NavSection[] = [
     label: "Management",
     items: [
       {
-        title: "Profile",
-        url: "/profile",
-        icon: UserCircle,
-      },
-      {
         title: "Products",
         url: "/products",
         icon: Package,
-      },
-      {
-        title: "Categories",
-        url: "/categories",
-        icon: FolderTree,
-      },
-      {
-        title: "Ads",
-        url: "/ads",
-        icon: Megaphone,
       },
     ],
   },
@@ -63,16 +43,8 @@ export const navigationSections: NavSection[] = [
         url: "/payments",
         icon: CreditCard,
       },
-      {
-        title: "Payment Logs",
-        url: "/payment-logs",
-        icon: Receipt,
-      },
-      {
-        title: "Sales Analytics",
-        url: "/sales-analytics",
-        icon: BarChart3,
-      },
+
+
       {
         title: "Support",
         url: "/support",

@@ -1,0 +1,8 @@
+export { PatientHeader } from './PatientHeader'
+export { PatientProfileCard } from './PatientProfileCard'
+export { OverviewTab } from './OverviewTab'
+export { MedicalRecordsTab } from './MedicalRecordsTab'
+export { TransactionsTab } from './TransactionsTab'
+export { OrdersTab } from './OrdersTab'
+export { FeedbackTab } from './FeedbackTab'
+export { NotesTab } from './NotesTab'

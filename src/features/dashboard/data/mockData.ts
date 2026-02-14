@@ -1,5 +1,8 @@
 import { Order, DashboardStats } from '../types'
 
+export const OVERVIEW_CITIES = ['All', 'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] as const
+export type OverviewCity = (typeof OVERVIEW_CITIES)[number]
+
 export const dashboardStats: DashboardStats = {
   totalEarnings: 456800,
   totalOrders: 1247,
@@ -9,6 +12,59 @@ export const dashboardStats: DashboardStats = {
   ordersChange: 15.2,
   clientsChange: 8.3,
   productsChange: 5.7,
+}
+
+export const dashboardStatsByCity: Record<string, DashboardStats> = {
+  'New York': {
+    totalEarnings: 185000,
+    totalOrders: 512,
+    totalClients: 320,
+    totalProducts: 68,
+    earningsChange: 14.2,
+    ordersChange: 18.1,
+    clientsChange: 10.2,
+    productsChange: 6.2,
+  },
+  'Los Angeles': {
+    totalEarnings: 142000,
+    totalOrders: 398,
+    totalClients: 245,
+    totalProducts: 52,
+    earningsChange: 11.8,
+    ordersChange: 12.5,
+    clientsChange: 7.1,
+    productsChange: 4.8,
+  },
+  'Chicago': {
+    totalEarnings: 98000,
+    totalOrders: 267,
+    totalClients: 178,
+    totalProducts: 24,
+    earningsChange: 9.5,
+    ordersChange: 10.2,
+    clientsChange: 5.3,
+    productsChange: 3.1,
+  },
+  'Houston': {
+    totalEarnings: 42800,
+    totalOrders: 118,
+    totalClients: 89,
+    totalProducts: 8,
+    earningsChange: 8.2,
+    ordersChange: 7.8,
+    clientsChange: 4.1,
+    productsChange: 2.5,
+  },
+  'Phoenix': {
+    totalEarnings: 31000,
+    totalOrders: 92,
+    totalClients: 60,
+    totalProducts: 4,
+    earningsChange: 6.5,
+    ordersChange: 5.2,
+    clientsChange: 2.8,
+    productsChange: 1.9,
+  },
 }
 
 export const upcomingOrders: Order[] = [
@@ -21,6 +77,7 @@ export const upcomingOrders: Order[] = [
     status: 'confirmed',
     seller: 'TechStore Pro',
     amount: 2450,
+    city: 'New York',
   },
   {
     id: '2',
@@ -31,6 +88,7 @@ export const upcomingOrders: Order[] = [
     status: 'processing',
     seller: 'Home Decor Plus',
     amount: 1890,
+    city: 'Los Angeles',
   },
   {
     id: '3',
@@ -41,6 +99,7 @@ export const upcomingOrders: Order[] = [
     status: 'confirmed',
     seller: 'Smart Solutions Inc',
     amount: 1650,
+    city: 'Chicago',
   },
 ]
 

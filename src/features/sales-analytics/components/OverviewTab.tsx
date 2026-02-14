@@ -7,9 +7,12 @@ import { SalesByCategoryChart } from './SalesByCategoryChart'
 
 interface OverviewTabProps {
   metrics: SalesMetrics
+  city?: string
+  /** When false, stats cards are hidden (e.g. on dashboard to avoid duplicating main stats). Default true. */
+  showStatsCards?: boolean
 }
 
-export function OverviewTab({ metrics }: OverviewTabProps) {
+export function OverviewTab({ metrics, city, showStatsCards = true }: OverviewTabProps) {
   const statsCards: StatsCardProps[] = [
     {
       title: 'Total Revenue',
@@ -51,16 +54,16 @@ export function OverviewTab({ metrics }: OverviewTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <StatsCardGrid 
-        cards={statsCards} 
-        columns={{ default: 1, sm: 2, lg: 4 }} 
-      />
+      {showStatsCards && (
+        <StatsCardGrid
+          cards={statsCards}
+          columns={{ default: 1, sm: 2, lg: 4 }}
+        />
+      )}
 
-      {/* Charts */}
       <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2">
-        <RevenueChart />
-        <SalesByCategoryChart />
+        <RevenueChart city={city} />
+        <SalesByCategoryChart city={city} />
       </div>
     </div>
   )

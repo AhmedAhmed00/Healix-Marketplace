@@ -28,7 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { addProductSchema, type AddProductFormData, type AddProductFormInput, productCategories, saleTypes } from '../schemas/product-schema'
+import { addProductSchema, type AddProductFormData, type AddProductFormInput, productCategories } from '../schemas/product-schema'
+import { PricingSection } from './form-sections/PricingSection'
 
 interface AddProductDialogProps {
   onSubmit: (data: AddProductFormData) => void
@@ -44,7 +45,11 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
       description: '',
       category: undefined,
       brand: '',
-      saleType: 'outright sale',
+      lease: false,
+      outrightSale: true,
+      leasePeriod: undefined,
+      leasePrice: '',
+      insurancePrice: '',
       price: '',
       stock: '',
     },
@@ -56,8 +61,12 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
       description: data.description,
       category: data.category,
       brand: data.brand || undefined,
-      saleType: data.saleType,
-      price: Number(data.price),
+      lease: data.lease,
+      outrightSale: data.outrightSale,
+      leasePeriod: data.leasePeriod,
+      leasePrice: data.leasePrice ? Number(data.leasePrice) : undefined,
+      insurancePrice: data.insurancePrice ? Number(data.insurancePrice) : undefined,
+      price: data.price ? Number(data.price) : undefined,
       stock: Number(data.stock),
     }
     onSubmit(transformedData)
@@ -170,77 +179,28 @@ export function AddProductDialog({ onSubmit }: AddProductDialogProps) {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              {/* Sale Type */}
-              <FormField
-                control={form.control}
-                name="saleType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Sale Type *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="focus:ring-[#3BC1CF]">
-                          <SelectValue placeholder="Select sale type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {saleTypes.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type.charAt(0).toUpperCase() + type.slice(1)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <PricingSection form={form} />
 
-              {/* Price */}
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Price ($) *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Stock */}
-              <FormField
-                control={form.control}
-                name="stock"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-semibold">Stock Quantity *</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="0"
-                        min="0"
-                        step="1"
-                        className="focus-visible:ring-[#3BC1CF]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="stock"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-semibold">Stock Quantity *</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      min="0"
+                      step="1"
+                      className="focus-visible:ring-[#3BC1CF]"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-4">

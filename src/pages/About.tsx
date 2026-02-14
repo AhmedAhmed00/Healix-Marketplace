@@ -4,7 +4,7 @@ function About() {
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <h1 className="text-4xl font-bold">About This Project</h1>
-      
+
       <Card>
         <CardHeader>
           <CardTitle>Tech Stack</CardTitle>
@@ -19,7 +19,7 @@ function About() {
               <li>Vite - Lightning-fast build tool</li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-2">UI & Styling</h3>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
@@ -28,7 +28,7 @@ function About() {
               <li>Radix UI - Unstyled, accessible components</li>
             </ul>
           </div>
-          
+
           <div>
             <h3 className="font-semibold mb-2">State & Data</h3>
             <ul className="list-disc list-inside text-muted-foreground space-y-1">
@@ -37,6 +37,7 @@ function About() {
               <li>Zod - Schema validation</li>
             </ul>
           </div>
+
         </CardContent>
       </Card>
     </div>

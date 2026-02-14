@@ -49,9 +49,11 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
                   <Badge className="bg-white/20 backdrop-blur-sm text-white border-white/40 hover:bg-white/30 px-4 py-1.5 text-sm font-medium shadow-lg">
                     {profile.specialization}
                   </Badge>
-                  <Badge className="bg-yellow-400/90 backdrop-blur-sm text-slate-900 border-yellow-300 hover:bg-yellow-300 px-4 py-1.5 text-sm font-bold shadow-lg">
-                    {profile.yearsOfExperience} Years Experience
-                  </Badge>
+                  {profile.yearsOfExperience > 0 && (
+                    <Badge className="bg-yellow-400/90 backdrop-blur-sm text-slate-900 border-yellow-300 hover:bg-yellow-300 px-4 py-1.5 text-sm font-bold shadow-lg">
+                      {profile.yearsOfExperience} Years Experience
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
