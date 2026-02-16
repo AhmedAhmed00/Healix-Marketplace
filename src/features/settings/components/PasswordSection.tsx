@@ -151,6 +151,7 @@ export function PasswordSection({ onSave }: PasswordSectionProps) {
             <AlertDescription className="text-green-800 dark:text-green-200">
               Password updated successfully!
             </AlertDescription>
+
           </Alert>
         )}
 

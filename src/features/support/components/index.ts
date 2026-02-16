@@ -9,5 +9,7 @@ export { AddNoteDialog } from './AddNoteDialog'
 export { ChangeStatusDialog } from './ChangeStatusDialog'
 export { AddTicketDialog } from './AddTicketDialog'
 export { ChatTab } from './ChatTab'
+export { SupportStatsCards } from './SupportStatsCards'
+export { TicketFilters } from './TicketFilters'
 export type { ChatMessage } from './ChatTab'
 

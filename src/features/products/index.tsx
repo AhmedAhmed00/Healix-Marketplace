@@ -15,7 +15,7 @@ export default function ProductsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { data: products, isLoading, isError } = useProducts();
-  
+
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
@@ -59,9 +59,9 @@ export default function ProductsPage() {
           {/* Products Table */}
           <Card className="border-none bg-transparent shadow-none hover:shadow-none">
             <CardContent className="px-0">
-              <DataTable 
-                columns={columns} 
-                data={products?.results || []} 
+              <DataTable
+                columns={columns}
+                data={products?.results || []}
                 count={products?.count}
                 manualPagination={true}
                 pageSize={10}
@@ -69,7 +69,7 @@ export default function ProductsPage() {
               />
             </CardContent>
           </Card>
-          
+
           <DeleteProductDialog
             open={isDeleteDialogOpen}
             onOpenChange={setIsDeleteDialogOpen}
