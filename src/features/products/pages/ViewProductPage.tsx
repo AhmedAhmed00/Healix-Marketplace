@@ -1,29 +1,56 @@
 import { useParams, useNavigate } from 'react-router-dom'
-import { useMemo } from 'react'
-import { ArrowLeft, Edit, Package, DollarSign, Box, Tag, Building2, Calendar } from 'lucide-react'
+import { ArrowLeft, Edit, Package, DollarSign, Box, Tag, Building2, Calendar, AlertCircle, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { mockProducts } from '../data/mockProducts'
+import { useProduct } from '../hooks/use-products'
+import FullPageLoading from '@/components/ui/full-page-loading'
+
+// You might want to move this to a separate file
+const formatCurrency = (amount: string | number) => {
+  const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(numAmount)
+}
+
+const getCategoryName = (categoryId: number) => {
+  // This should be replaced with actual category mapping from your backend
+  const categories: Record<number, string> = {
+    1: 'Electronics',
+    2: 'Clothing',
+    3: 'Furniture',
+    4: 'Books',
+    // Add more categories as needed
+  }
+  return categories[categoryId] || `Category #${categoryId}`
+}
 
 export function ViewProductPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
 
-  const product = useMemo(() => {
-    return mockProducts.find((p) => p.id === id)
-  }, [id])
+  const { data: product, isLoading, isError } = useProduct(id!)
 
-  if (!product) {
+  if (isLoading) {
+    return (
+      <FullPageLoading resource='Product' />
+    )
+  }
+
+  if (isError || !product) {
     return (
       <div className="space-y-6">
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <Package className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
-            <h2 className="text-2xl font-bold mb-2">Product Not Found</h2>
+            <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Error Loading Product</h2>
             <p className="text-muted-foreground mb-4">
-              The product you're looking for doesn't exist.
+              {isError ? 'Failed to load product details.' : 'Product not found.'}
             </p>
             <Button onClick={() => navigate('/products')}>
               Back to Products
@@ -33,6 +60,11 @@ export function ViewProductPage() {
       </div>
     )
   }
+
+
+  const salePrice = parseFloat(product.price)
+  const leasePrice = product.lease_price ? parseFloat(product.lease_price) : null
+  const insurancePrice = product.insurance_price ? parseFloat(product.insurance_price) : null
 
   return (
     <div className="space-y-6">
@@ -48,17 +80,17 @@ export function ViewProductPage() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-to) bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold tracking-tight bg-linear-to-r from-[#1974BB] to-[#3BC1CF] bg-clip-text text-transparent">
               {product.name}
             </h1>
             <p className="text-muted-foreground mt-2">
-              Detailed breakdown of product specifications
+              Product ID: {product.id} • {product.is_active ? 'Active' : 'Inactive'}
             </p>
           </div>
         </div>
         <Button
-          onClick={() => navigate(`/products/edit/${product.id}`)}
-          className="bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-to) text-white hover:opacity-90"
+          onClick={() => navigate(`/products/add?mode=update&product_id=${product.id}`)}
+          className="bg-linear-to-r from-[#1974BB] to-[#3BC1CF] text-white hover:opacity-90"
         >
           <Edit className="w-4 h-4 mr-2" />
           Edit Product
@@ -71,8 +103,24 @@ export function ViewProductPage() {
           {/* Product Image & Info */}
           <Card className="overflow-hidden">
             <div className="aspect-video w-full bg-muted relative">
-              {product.image ? (
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              {product.main_image ? (
+                <img
+                  src={product.main_image}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder-image.png' // Add a placeholder
+                  }}
+                />
+              ) : product.images && product.images.length > 0 ? (
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = '/placeholder-image.png'
+                  }}
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                   <Package className="w-12 h-12 opacity-20" />
@@ -83,13 +131,13 @@ export function ViewProductPage() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl text-[#1974BB] dark:text-[#3BC1CF]">Description</CardTitle>
                 <Badge variant="outline" className="bg-[#3BC1CF]/10 text-[#1974BB] border-[#3BC1CF]/20">
-                  {product.category}
+                  {getCategoryName(product.category)}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                {product.description}
+                {product.description || 'No description provided.'}
               </p>
             </CardContent>
           </Card>
@@ -106,18 +154,48 @@ export function ViewProductPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground font-medium">Sale Type</span>
-                  <Badge className={product.saleType === 'lease' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}>
-                    {product.saleType.charAt(0).toUpperCase() + product.saleType.slice(1)}
+                  <Badge className={
+                    product.sale_type === 'lease'
+                      ? 'bg-purple-100 text-purple-700 border-purple-200'
+                      : product.sale_type === 'both'
+                        ? 'bg-green-100 text-green-700 border-green-200'
+                        : 'bg-blue-100 text-blue-700 border-blue-200'
+                  }>
+                    {product.sale_type.charAt(0).toUpperCase() + product.sale_type.slice(1)}
                   </Badge>
                 </div>
                 <Separator />
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground font-medium">Price</span>
-                  <span className="text-2xl font-bold text-[#1974BB] dark:text-[#3BC1CF]">
-                    ${product.price.toLocaleString()}
-                    {product.saleType === 'lease' && <span className="text-sm ml-1">/mo</span>}
-                  </span>
-                </div>
+
+                {(product.sale_type === 'sale' || product.sale_type === 'both') && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground font-medium">Sale Price</span>
+                      <span className="text-2xl font-bold text-[#1974BB] dark:text-[#3BC1CF]">
+                        {formatCurrency(salePrice)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {(product.sale_type === 'lease' || product.sale_type === 'both') && leasePrice && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground font-medium">Lease Price</span>
+                      <span className="text-xl font-semibold">
+                        {formatCurrency(leasePrice)}
+                        <span className="text-sm text-muted-foreground ml-1">
+                          /{product.lease_period || 'month'}
+                        </span>
+                      </span>
+                    </div>
+                    {insurancePrice && insurancePrice > 0 && (
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Insurance</span>
+                        <span>{formatCurrency(insurancePrice)}/mo</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -131,8 +209,15 @@ export function ViewProductPage() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground font-medium">Stock Status</span>
-                  <Badge variant={product.stock > 0 ? 'default' : 'destructive'}>
-                    {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                  <Badge
+                    variant={product.stock > 0 ? (product.stock < 10 ? 'warning' : 'default') : 'destructive'}
+                    className={product.stock > 0 && product.stock < 10 ? 'bg-orange-100 text-orange-700 border-orange-200' : ''}
+                  >
+                    {product.stock === 0
+                      ? 'Out of Stock'
+                      : product.stock < 10
+                        ? 'Low Stock'
+                        : 'In Stock'}
                   </Badge>
                 </div>
                 <Separator />
@@ -151,13 +236,48 @@ export function ViewProductPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
                 <Building2 className="w-5 h-5" />
-                Brand Information
+                Brand & Vendor
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Brand
+                </label>
+                <p className="mt-1 text-lg font-semibold">
+                  {product.brand || 'No Brand Specified'}
+                </p>
+              </div>
+              <Separator />
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Vendor ID
+                </label>
+                <p className="mt-1 text-sm font-medium">
+                  #{product.vendor}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
+                <Tag className="w-5 h-5" />
+                Category Details
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Manufacturer / Brand</label>
-                <p className="mt-1 text-lg font-semibold">{product.brand || 'No Brand Specified'}</p>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Category ID
+                </label>
+                <p className="mt-1 text-lg font-semibold">
+                  {product.category}
+                </p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {getCategoryName(product.category)}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -166,27 +286,31 @@ export function ViewProductPage() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2 text-[#1974BB] dark:text-[#3BC1CF]">
                 <Calendar className="w-5 h-5" />
-                History
+                Additional Images
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Created At</label>
-                <p className="text-sm font-medium mt-1">
-                  {new Date(product.createdAt).toLocaleDateString('en-US', {
-                    month: 'long', day: 'numeric', year: 'numeric'
-                  })}
+            <CardContent>
+              {product.images && product.images.length > 0 ? (
+                <div className="grid grid-cols-3 gap-2">
+                  {product.images.map((image, index) => (
+                    <div
+                      key={index}
+                      className="aspect-square rounded-md overflow-hidden bg-muted cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => window.open(image, '_blank')}
+                    >
+                      <img
+                        src={image}
+                        alt={`${product.name} - ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No additional images
                 </p>
-              </div>
-              <Separator />
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Last Updated</label>
-                <p className="text-sm font-medium mt-1">
-                  {new Date(product.updatedAt).toLocaleDateString('en-US', {
-                    month: 'long', day: 'numeric', year: 'numeric'
-                  })}
-                </p>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>

@@ -1,28 +1,36 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-    baseURL: 'https://api.example.com',
+    baseURL: import.meta.env.VITE_API_URL,
     timeout: 5000,
-
+    headers: {
+        "Content-Type": "application/json",
+    },
 });
 
-api.interceptors.request.use(
-    (config) => {
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem("access_token");
 
-        const token = localStorage.getItem('token');
+    if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+        config.headers["ngrok-skip-browser-warning"] = true;
+    }
+    return config;
+});
 
-        if (token) config.headers['Authorization'] = `Bearer ${token}`;
-        console.log('Axios Request', 'color: blue', {
-            url: config.url,
-            method: config.method,
-            data: config.data,
-            headers: config.headers,
-            token: config.headers.token
-        });
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("healix_vendor");
 
-        return config;
-    },
-    (error) => Promise.reject(error)
+            window.location.href = "/login";
+        }
+        return Promise.reject(error);
+    }
 );
+
 
 export default api;

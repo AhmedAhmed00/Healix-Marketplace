@@ -5,19 +5,18 @@ import { mockOrders } from './data/mockOrders'
 import { filterOrders, sortOrdersByDate, countOrdersByStatus } from './utils'
 import type { OrderStatus } from './types'
 import { ViewOrderPage } from './pages/ViewOrderPage'
+import { useOrders } from './hooks/use-orders'
 
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeTab, setActiveTab] = useState<OrderStatus | 'all'>('all')
 
+
+  const { data: { count, results } = {}, isError, isFetching, isLoading } = useOrders(activeTab)
+
+
   // Filter and sort orders
-  const filteredOrders = useMemo(() => {
-    const filtered = filterOrders(mockOrders, {
-      status: activeTab,
-      search: searchQuery,
-    })
-    return sortOrdersByDate(filtered, 'desc')
-  }, [searchQuery, activeTab])
+
 
   // Count orders by status
   const counts = useMemo(() => {
@@ -40,7 +39,8 @@ export default function OrdersPage() {
               counts={counts}
             >
               <OrdersList
-                orders={filteredOrders}
+                orders={results}
+                count={count}
                 emptyMessage={
                   searchQuery
                     ? 'No orders match your search'

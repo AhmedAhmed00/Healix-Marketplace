@@ -1,18 +1,35 @@
-export type SaleType = 'outright sale' | 'lease'
-export type ProductCategory = 'Electronics' | 'Furniture' | 'Smart Home' | 'Accessories' | 'Sports' | 'Home' | 'Clothing' | 'Books' | 'Toys' | 'Other'
+export type SaleType = 'sale' | 'lease' | 'both'
+export type LeasePeriod = 'daily' | 'monthly' | 'yearly'
+
+export interface Category {
+  id: number
+  type: string
+  name: string
+  slug: string
+  description: string
+  is_active: boolean
+  product_count: number
+  created_at: string
+  updated_at: string
+}
 
 export interface Product {
-  id: string
+  id: number
   name: string
-  category: ProductCategory
   description: string
-  image?: string
-  saleType: SaleType
-  price: number
-  stock: number
+  category: number
   brand?: string
-  createdAt: string
-  updatedAt: string
+  sale_type: SaleType
+  price: string
+  stock: number
+  lease_period?: LeasePeriod
+  lease_price?: string
+  insurance_price?: string
+  is_active: boolean
+  main_image?: string
+  images?: string[]
+  created_at: string
+  updated_at: string
 }
 
 export interface ProductStats {
@@ -22,4 +39,19 @@ export interface ProductStats {
   outOfStock: number
   draft: number
   totalValue: number
+}
+
+export interface ApiPaginatedResponse<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[];
+}
+
+export interface UpdateProfilePayload {
+  first_name: string
+  middle_name: string
+  last_name: string
+  bio: string
+  image: File | null
 }

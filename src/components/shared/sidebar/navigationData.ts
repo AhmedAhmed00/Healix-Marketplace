@@ -6,6 +6,7 @@ import {
   Package,
   Users,
   HeadphonesIcon,
+  User,
 } from "lucide-react"
 import type { NavSection } from "./types"
 
@@ -23,6 +24,12 @@ export const navigationSections: NavSection[] = [
   {
     label: "Management",
     items: [
+      {
+        title: "Profile",
+        url: "/profile",
+        icon: User,
+      },
+
       {
         title: "Products",
         url: "/products",

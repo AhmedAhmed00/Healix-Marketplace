@@ -4,7 +4,7 @@ import { ScrollRestoration } from './components/ScrollRestoration'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import DashboardPage from './features/dashboard'
-import ProfilePage from './features/profile'
+import VendorProfilePage from './features/profile'
 import OrdersPage from './features/orders'
 import PaymentsPage from './features/payments'
 import { ViewTransactionPage } from './features/payments/pages/ViewTransactionPage'
@@ -24,12 +24,15 @@ import VerifyOTP from './pages/VerifyOTP'
 import { ViewOrderPage } from './features/orders/pages/ViewOrderPage'
 import { ViewCategoryPage } from './features/categories/pages'
 import SupportPage from './features/support'
+import { ToastContainer } from 'react-toastify';
+
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth()
 
   return (
     <>
+      <ToastContainer position="top-right" />
       <ScrollRestoration />
       <Routes>
         {/* Public Routes */}
@@ -54,7 +57,7 @@ function AppRoutes() {
               <Layout>
                 <Routes>
                   <Route path="/" element={<DashboardPage />} />
-                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/profile" element={<VendorProfilePage />} />
                   <Route path="/orders" element={<OrdersPage />} />
                   <Route path="/orders/view/:id" element={<ViewOrderPage />} />
                   <Route path="/payments" element={<PaymentsPage />} />

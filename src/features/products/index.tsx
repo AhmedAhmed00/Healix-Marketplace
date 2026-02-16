@@ -8,11 +8,17 @@ import { Package, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AddProductPage } from './pages/AddProductPage'
 import { ViewProductPage } from './pages/ViewProductPage'
+import { useProducts } from './hooks/use-products'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const stats = calculateProductStats(mockProducts)
+  const { data: products, isLoading, isError } = useProducts();
+
+
+
+
 
   const isAddPage = location.pathname === '/products/add'
   const isViewPage = location.pathname.includes('/products/view/')
@@ -43,7 +49,7 @@ export default function ProductsPage() {
           {/* Products Table */}
           <Card className="border-none bg-transparent shadow-none hover:shadow-none">
             <CardContent className="px-0">
-              <DataTable columns={productColumns} data={mockProducts} />
+              <DataTable columns={productColumns} data={products?.results || []} />
             </CardContent>
           </Card>
         </div>

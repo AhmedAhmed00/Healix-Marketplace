@@ -1,80 +1,87 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from "react-router-dom"
 import {
-    ArrowLeft,
     Edit,
     Package,
     DollarSign,
-    Tag,
-    Building2,
     Calendar,
     FileText,
     User,
     MapPin,
-    Truck,
     AlertCircle,
     XCircle,
     Phone,
     Mail,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { mockOrders } from '../data/mockOrders'
-import { getStatusConfig } from '../constants/order-status'
-import { useMemo } from 'react'
+} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { getStatusConfig } from "../constants/order-status"
+import { useOrder } from "../hooks/use-order"
+import FullPageLoading from "@/components/ui/full-page-loading"
 
 export function ViewOrderPage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
 
-    const order = useMemo(() => mockOrders.find((o) => o.id === id), [id])
+    const { data: order, isLoading, isError } = useOrder(id)
 
-    if (!order) {
+    if (isLoading) {
+        return <FullPageLoading resource="Order" />
+    }
+
+    if (isError || !order) {
         return (
-            <div className="space-y-6">
-                <div className="flex flex-col items-center justify-center py-16 border rounded-xl bg-background/60">
-                    <Package className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
-                    <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
-                    <p className="text-muted-foreground mb-4">
-                        The order you&apos;re looking for doesn&apos;t exist.
-                    </p>
-                    <Button onClick={() => navigate('/orders')}>Back to Orders</Button>
-                </div>
+            <div className="flex flex-col items-center justify-center py-16 border rounded-xl">
+                <Package className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
+                <h2 className="text-2xl font-bold mb-2">Order Not Found</h2>
+                <Button onClick={() => navigate("/orders")}>
+                    Back to Orders
+                </Button>
             </div>
         )
     }
 
-    const statusConfig = getStatusConfig(order.status)
+    const summary = order.order_summary
+    const payment = order.payment_details
+    const client = order.client_information
+    const delivery = order.delivery_information
+    const items = order.order_items
+    const timeline = order.order_status_timeline
+
+    const statusConfig = getStatusConfig(summary.status)
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {/* ================= HEADER ================= */}
             <div className="flex items-center justify-between border-b pb-4">
-                <div className="flex items-center gap-4">
-
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-                            <span className="bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-to) bg-clip-text text-transparent">
-                                #{order.orderNumber}
-                            </span>
-                        </h1>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Placed on {new Date(order.createdAt).toLocaleDateString()}
-                        </p>
-                    </div>
+                <div>
+                    <h1 className="text-3xl font-bold">
+                        #{summary.order_number}
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                        Placed on{" "}
+                        {new Date(summary.placed_at).toLocaleDateString()}
+                    </p>
                 </div>
+
                 <div className="flex gap-3">
                     <Button
                         variant="outline"
                         className="text-red-500 border-red-200 hover:bg-red-50"
-                        disabled={order.status === 'cancelled' || order.status === 'delivered'}
+                        disabled={
+                            summary.status === "cancelled" ||
+                            summary.status === "delivered"
+                        }
                     >
                         <XCircle className="w-4 h-4 mr-2" />
                         Reject
                     </Button>
+
                     <Button
-                        className="bg-linear-to-r from-(--brand-gradient-from) to-(--brand-gradient-to) text-white hover:opacity-90"
-                        disabled={order.status !== 'pending' && order.status !== 'confirmed'}
+                        disabled={
+                            summary.status !== "pending" &&
+                            summary.status !== "confirmed"
+                        }
                     >
                         <Edit className="w-4 h-4 mr-2" />
                         Accept
@@ -82,291 +89,241 @@ export function ViewOrderPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Main column */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* ================= LEFT SIDE ================= */}
                 <div className="lg:col-span-2 space-y-8">
-                    {/* Summary */}
-                    <section className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="space-y-1">
-                                <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase flex items-center gap-2">
-                                    <FileText className="w-4 h-4 text-[#1974BB] dark:text-[#3BC1CF]" />
-                                    Order Summary
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    System tracking and status information
-                                </p>
-                            </div>
+                    {/* -------- ORDER SUMMARY -------- */}
+                    <section className="space-y-4 rounded-xl border p-4">
+                        <div className="flex justify-between items-center">
+                            <p className="text-xs uppercase font-semibold flex items-center gap-2 text-muted-foreground">
+                                <FileText className="w-4 h-4" />
+                                Order Summary
+                            </p>
+
                             <Badge
-                                className={`${statusConfig.bgColor} ${statusConfig.color} ${statusConfig.borderColor} border-2 font-semibold text-sm px-4 py-1.5`}
+                                className={`${statusConfig.bgColor} ${statusConfig.color} ${statusConfig.borderColor} border-2 px-4 py-1`}
                             >
                                 {statusConfig.icon}
-                                <span className="ml-2">{statusConfig.label}</span>
+                                <span className="ml-2">
+                                    {statusConfig.label}
+                                </span>
                             </Badge>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 rounded-xl border bg-background/40 px-4 py-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div>
-                                <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                                <p className="text-xs uppercase text-muted-foreground">
                                     Product
                                 </p>
-                                <p className="text-base md:text-lg font-bold">{order.product}</p>
+                                <p className="font-bold">
+                                    {summary.product}
+                                </p>
                             </div>
+
                             <div>
-                                <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                                <p className="text-xs uppercase text-muted-foreground">
                                     Order Number
                                 </p>
-                                <p className="text-base md:text-lg font-mono font-medium">{order.orderNumber}</p>
+                                <p className="font-mono">
+                                    {summary.order_number}
+                                </p>
                             </div>
+
                             <div>
-                                <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                                <p className="text-xs uppercase text-muted-foreground">
                                     Total
                                 </p>
-                                <p className="text-xl md:text-2xl font-bold text-[#1974BB] dark:text-[#3BC1CF]">
-                                    ${order.amount.toLocaleString()}
+                                <p className="text-xl font-bold text-primary">
+                                    ${Number(payment.total).toLocaleString()}
                                 </p>
                             </div>
                         </div>
                     </section>
 
-                    {/* Client + shipping */}
+                    {/* -------- CLIENT + DELIVERY -------- */}
                     <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-4 rounded-xl border bg-background/40 px-4 py-4">
-                            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase flex items-center gap-2">
-                                <User className="w-4 h-4 text-[#1974BB] dark:text-[#3BC1CF]" />
+                        <div className="rounded-xl border p-4 space-y-3">
+                            <p className="text-xs uppercase font-semibold text-muted-foreground flex items-center gap-2">
+                                <User className="w-4 h-4" />
                                 Client Information
                             </p>
-                            <div className="flex items-center gap-3 ">
 
-                                <div className="space-y-3">
-                                    <p className="font-semibold flex items-center gap-2">
-                                        <User className="w-4 h-4 text-[#3BC1CF]" />
-                                        {order.clientName}
-                                    </p>
-                                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                        <Mail className="w-4 h-4 text-[#3BC1CF]" />
-                                        {order.clientEmail}
-                                    </p>
+                            <p className="font-semibold">{client.name}</p>
+                            <p className="text-sm flex items-center gap-2">
+                                <Mail className="w-4 h-4" />
+                                {client.email}
+                            </p>
 
-                                    {order.clientPhone && (
-                                        <p className="text-sm flex items-center gap-2">
-                                            <Phone className="w-4 h-4 text-[#3BC1CF]" />
-                                            <span>{order.clientPhone}</span>
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
+                            {client.phone && (
+                                <p className="text-sm flex items-center gap-2">
+                                    <Phone className="w-4 h-4" />
+                                    {client.phone}
+                                </p>
+                            )}
                         </div>
 
-                        <div className="space-y-4 rounded-xl border bg-background/40 px-4 py-4">
+                        <div className="rounded-xl border p-4 space-y-3">
+                            <p className="text-xs uppercase font-semibold text-muted-foreground flex items-center gap-2">
+                                <MapPin className="w-4 h-4" />
+                                Delivery Information
+                            </p>
 
-                            <div className="flex items-start gap-2">
-                                <MapPin className="w-4 h-4 text-[#3BC1CF] mt-1 shrink-0" />
-                                <div>
-                                    <p className="text-xs mb-2 font-semibold text-muted-foreground uppercase">
-                                        Delivery Address
-                                    </p>
-                                    <p className="text-sm mt-1">{order.shippingAddress}</p>
-                                </div>
-                            </div>
-                            {order.trackingNumber && (
-                                <>
-                                    <Separator />
-                                    <div className="space-y-1">
-                                        <p className="text-xs font-semibold text-muted-foreground uppercase">
-                                            Tracking Number
-                                        </p>
-                                        <p className="text-sm font-mono flex items-center gap-2">
-                                            <Tag className="w-4 h-4 text-[#3BC1CF]" />
-                                            {order.trackingNumber}
-                                        </p>
-                                    </div>
-                                </>
+                            <p>{delivery.address}</p>
+
+                            {delivery.estimated_delivery_date && (
+                                <p className="text-sm text-muted-foreground">
+                                    Estimated delivery:{" "}
+                                    {new Date(
+                                        delivery.estimated_delivery_date
+                                    ).toLocaleDateString()}
+                                </p>
                             )}
                         </div>
                     </section>
 
-                    {/* Items */}
-                    <section className="space-y-3 rounded-xl border bg-background/40 px-4 py-4">
-                        <div className="flex items-center justify-between gap-2">
-                            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase flex items-center gap-2">
-                                <Package className="w-4 h-4 text-[#1974BB] dark:text-[#3BC1CF]" />
+                    {/* -------- ORDER ITEMS -------- */}
+                    <section className="rounded-xl border p-4 space-y-4">
+                        <div className="flex justify-between items-center">
+                            <p className="text-xs uppercase font-semibold flex items-center gap-2 text-muted-foreground">
+                                <Package className="w-4 h-4" />
                                 Order Items
                             </p>
                             <span className="text-xs text-muted-foreground">
-                                {order.quantity} item{order.quantity > 1 ? 's' : ''}
+                                {summary.items_count} item
+                                {summary.items_count > 1 && "s"}
                             </span>
                         </div>
-                        <div className="grid grid-cols-12 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
-                            <div className="col-span-6">Item</div>
-                            <div className="col-span-2 text-right">Qty</div>
-                            <div className="col-span-2 text-right">Price</div>
-                            <div className="col-span-2 text-right">Total</div>
-                        </div>
-                        <div className="rounded-lg border bg-card/40">
-                            <div className="grid grid-cols-12 px-4 py-3 text-sm items-center">
-                                <div className="col-span-6">
-                                    <p className="font-medium">{order.product}</p>
-                                    <p className="text-xs text-muted-foreground">Product ID: {order.productId}</p>
+
+                        <div className="space-y-3">
+                            {items.map((item) => (
+                                <div
+                                    key={item.id}
+                                    className="grid grid-cols-12 text-sm items-center border-b pb-2"
+                                >
+                                    <div className="col-span-6">
+                                        <p className="font-medium">
+                                            {item.product_name}
+                                        </p>
+                                    </div>
+
+                                    <div className="col-span-2 text-right">
+                                        {item.quantity}
+                                    </div>
+
+                                    <div className="col-span-2 text-right">
+                                        ${Number(item.unit_price).toLocaleString()}
+                                    </div>
+
+                                    <div className="col-span-2 text-right font-semibold">
+                                        ${Number(item.line_total).toLocaleString()}
+                                    </div>
                                 </div>
-                                <div className="col-span-2 text-right">{order.quantity}</div>
-                                <div className="col-span-2 text-right">
-                                    ${(order.amount / order.quantity).toLocaleString()}
-                                </div>
-                                <div className="col-span-2 text-right font-semibold text-[#1974BB] dark:text-[#3BC1CF]">
-                                    ${order.amount.toLocaleString()}
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </section>
                 </div>
 
-                {/* Right column */}
+                {/* ================= RIGHT SIDE ================= */}
                 <div className="space-y-6">
-                    {/* Payment */}
-                    <section className="space-y-4 rounded-xl border bg-background/40 px-4 py-4">
-                        <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase flex items-center gap-2">
-                            <DollarSign className="w-4 h-4 text-[#1974BB] dark:text-[#3BC1CF]" />
+                    {/* -------- PAYMENT -------- */}
+                    <section className="rounded-xl border p-4 space-y-4">
+                        <p className="text-xs uppercase font-semibold flex items-center gap-2 text-muted-foreground">
+                            <DollarSign className="w-4 h-4" />
                             Payment Details
                         </p>
-                        <div className="space-y-4 text-sm">
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground font-medium">Method</span>
-                                <span className="capitalize">{order.paymentMethod.replace('_', ' ')}</span>
+
+                        <div className="text-sm space-y-2">
+                            <div className="flex justify-between">
+                                <span>Method</span>
+                                <span className="capitalize">
+                                    {payment.method.replace("_", " ")}
+                                </span>
                             </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-muted-foreground font-medium">Status</span>
-                                <Badge
-                                    variant={order.paymentStatus === 'completed' ? 'default' : 'secondary'}
-                                    className="capitalize"
-                                >
-                                    {order.paymentStatus}
+
+                            <div className="flex justify-between">
+                                <span>Status</span>
+                                <Badge className="capitalize">
+                                    {payment.status}
                                 </Badge>
                             </div>
+
                             <Separator />
-                            <div className="flex justify-between items-center">
-                                <span className="font-semibold">Subtotal</span>
-                                <span className="font-medium">${order.amount.toLocaleString()}</span>
+
+                            <div className="flex justify-between">
+                                <span>Subtotal</span>
+                                <span>
+                                    ${Number(payment.subtotal).toLocaleString()}
+                                </span>
                             </div>
-                            <div className="flex justify-between items-center text-lg">
-                                <span className="font-bold text-[#1974BB] dark:text-[#3BC1CF]">Total</span>
-                                <span className="font-bold text-[#1974BB] dark:text-[#3BC1CF]">
-                                    ${order.amount.toLocaleString()}
+
+                            <div className="flex justify-between">
+                                <span>Tax</span>
+                                <span>
+                                    ${Number(payment.tax_amount).toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="flex justify-between">
+                                <span>Discount</span>
+                                <span>
+                                    -$
+                                    {Number(
+                                        payment.discount_amount
+                                    ).toLocaleString()}
+                                </span>
+                            </div>
+
+                            <Separator />
+
+                            <div className="flex justify-between text-lg font-bold">
+                                <span>Total</span>
+                                <span>
+                                    ${Number(payment.total).toLocaleString()}
                                 </span>
                             </div>
                         </div>
                     </section>
 
-                    {/* Timeline */}
-                    <section className="rounded-xl border bg-background/40 px-4 py-3 space-y-3">
+                    {/* -------- TIMELINE -------- */}
+                    <section className="rounded-xl border p-4 space-y-3">
                         <div className="flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-[#1974BB] dark:text-[#3BC1CF]" />
-                            <h2 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                            <Calendar className="w-5 h-5" />
+                            <h2 className="text-xs uppercase font-semibold text-muted-foreground">
                                 Order Status Timeline
                             </h2>
                         </div>
-                        <div className="space-y-3 pt-1">
-                            {[
-                                { key: 'pending', label: 'Order Placed' },
-                                { key: 'confirmed', label: 'Order Confirmed' },
-                                { key: 'processing', label: 'Processing' },
-                                { key: 'shipped', label: 'Shipped' },
-                                { key: 'delivered', label: 'Delivered' },
-                                { key: 'cancelled', label: 'Cancelled' },
-                            ].map((step, index, all) => {
-                                const currentIndex = all.findIndex((s) => s.key === order.status)
-                                const isCompleted = index < currentIndex && order.status !== 'cancelled'
-                                const isCurrent = index === currentIndex
 
-                                const baseDot = 'w-3 h-3 rounded-full border-2 transition-colors duration-150'
-                                const dotClass = isCompleted
-                                    ? 'bg-emerald-500 border-emerald-500'
-                                    : isCurrent
-                                        ? 'bg-[#1974BB] border-[#1974BB]'
-                                        : 'bg-background border-muted'
+                        {timeline.map((step) => (
+                            <div key={step.status} className="border p-3 rounded-md">
+                                <div className="flex justify-between items-center">
+                                    <p className="capitalize font-semibold">
+                                        {step.status}
+                                    </p>
 
-                                const rowBg = isCurrent
-                                    ? 'bg-[#3BC1CF]/5 border-[#3BC1CF]/40'
-                                    : isCompleted
-                                        ? 'bg-muted/40 border-muted'
-                                        : 'bg-background border-dashed border-muted'
-
-                                return (
-                                    <div key={step.key} className="flex items-stretch gap-3">
-                                        <div className="flex flex-col items-center pt-1">
-                                            <div className={`${baseDot} ${dotClass}`} />
-                                            {index < all.length - 1 && (
-                                                <div className="w-px flex-1 bg-gradient-to-b from-muted/80 to-transparent mt-1" />
-                                            )}
-                                        </div>
-                                        <div className={`flex-1 rounded-md px-3 py-2.5 border ${rowBg}`}>
-                                            <div className="flex items-center justify-between gap-2">
-                                                <p className="text-sm font-semibold">
-                                                    {step.label}
-                                                    {isCurrent && (
-                                                        <span className="ml-2 inline-flex items-center rounded-full bg-[#1974BB]/10 px-2 py-0.5 text-[11px] font-medium text-[#1974BB] dark:text-[#3BC1CF]">
-                                                            Current status
-                                                        </span>
-                                                    )}
-                                                </p>
-                                                <span className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                                                    {step.key}
-                                                </span>
-                                            </div>
-
-                                            <div className="mt-1.5 space-y-1.5 text-xs text-muted-foreground">
-                                                {index === 0 && (
-                                                    <p>
-                                                        Placed on{' '}
-                                                        <span className="font-medium">
-                                                            {new Date(order.createdAt).toLocaleString()}
-                                                        </span>
-                                                    </p>
-                                                )}
-                                                {step.key === 'delivered' && order.status === 'delivered' && (
-                                                    <p>
-                                                        Delivered on{' '}
-                                                        <span className="font-medium">
-                                                            {new Date(order.updatedAt).toLocaleString()}
-                                                        </span>
-                                                    </p>
-                                                )}
-                                                {step.key === 'cancelled' && order.status === 'cancelled' && (
-                                                    <p>
-                                                        Cancelled on{' '}
-                                                        <span className="font-medium">
-                                                            {new Date(order.updatedAt).toLocaleString()}
-                                                        </span>
-                                                    </p>
-                                                )}
-                                                {step.key === 'shipped' && order.estimatedDelivery && (
-                                                    <p>
-                                                        Estimated delivery{' '}
-                                                        <span className="font-medium">
-                                                            {new Date(order.estimatedDelivery).toLocaleDateString()}
-                                                        </span>
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
+                                    {step.timestamp && (
+                                        <span className="text-xs text-muted-foreground">
+                                            {new Date(
+                                                step.timestamp
+                                            ).toLocaleString()}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </section>
 
-                    {/* Notes */}
+                    {/* -------- NOTES -------- */}
                     {order.notes && (
-                        <section className="rounded-xl border border-yellow-200 dark:border-yellow-900/40 bg-yellow-50/60 dark:bg-yellow-950/20 px-4 py-3">
-                            <div className="flex items-center gap-2 mb-1.5">
-                                <AlertCircle className="w-4 h-4 text-yellow-700 dark:text-yellow-400" />
-                                <h3 className="text-xs font-semibold tracking-wide text-yellow-800 dark:text-yellow-400 uppercase">
+                        <section className="rounded-xl border border-yellow-200 bg-yellow-50 px-4 py-3">
+                            <div className="flex items-center gap-2 mb-2">
+                                <AlertCircle className="w-4 h-4 text-yellow-600" />
+                                <h3 className="text-xs uppercase font-semibold text-yellow-700">
                                     Order Notes
                                 </h3>
                             </div>
-                            <p className="text-xs text-yellow-700 dark:text-yellow-300 italic">
-                                &quot;{order.notes}&quot;
+
+                            <p className="text-sm italic text-yellow-700">
+                                "{order.notes}"
                             </p>
                         </section>
                     )}

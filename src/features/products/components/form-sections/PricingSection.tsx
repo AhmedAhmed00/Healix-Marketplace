@@ -14,75 +14,73 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import { AddProductFormInput, leasePeriods } from '../../schemas/product-schema'
+import { AddProductFormInput, leasePeriods, saleTypes } from '../../schemas/product-schema'
+import { useEffect, useState } from 'react'
 
 interface PricingSectionProps {
     form: UseFormReturn<AddProductFormInput>
+    product: AddProductFormInput
 }
 
-export function PricingSection({ form }: PricingSectionProps) {
-    const lease = form.watch('lease')
-    const outrightSale = form.watch('outrightSale')
+export function PricingSection({ form, product }: PricingSectionProps) {
+
+
+    const [sale_type, setSale_type] = useState<string>(product.sale_type)
+
+    useEffect(() => {
+        if (product.sale_type) {
+            setSale_type(product.sale_type)
+
+        }
+    }, [product.sale_type])
+    const saleType = form.watch('sale_type')
+    console.log(saleType)
+    const showLeaseFields = saleType === 'lease' || saleType === 'both'
 
     return (
-        <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-[#1974BB] dark:text-[#3BC1CF]">Pricing & Sale Type</h3>
-            <p className="text-sm text-muted-foreground">Select at least one option. You can offer both lease and outright sale.</p>
-
-            {/* Lease & Outright sale checkboxes */}
-            <div className="flex flex-wrap gap-6">
-                <FormField
-                    control={form.control}
-                    name="lease"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl>
-                                <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="border-[#1974BB] data-[state=checked]:bg-[#3BC1CF] data-[state=checked]:border-[#3BC1CF]"
-                                />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-semibold cursor-pointer">Lease</FormLabel>
-                            </div>
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="outrightSale"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                            <FormControl>
-                                <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                    className="border-[#1974BB] data-[state=checked]:bg-[#3BC1CF] data-[state=checked]:border-[#3BC1CF]"
-                                />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                                <FormLabel className="text-sm font-semibold cursor-pointer">Outright sale</FormLabel>
-                            </div>
-                        </FormItem>
-                    )}
-                />
+        <div className="space-y-6">
+            <div>
+                <h3 className="text-lg font-semibold text-[#1974BB] dark:text-[#3BC1CF]">Pricing & Sale Type</h3>
+                <p className="text-sm text-muted-foreground mt-1">Configure how this product will be sold</p>
             </div>
-            <FormField
-                control={form.control}
-                name="lease"
-                render={() => <FormMessage />}
-            />
 
-            {/* Single Actual price – used for both lease and outright sale when both are selected */}
-            {(lease || outrightSale) && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Sale Type */}
+                <FormField
+                    control={form.control}
+                    name="sale_type"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel className="text-sm font-semibold">Sale Type *</FormLabel>
+                            <Select onValueChange={(value) => {
+                                field.onChange(value)
+                                setSale_type(value)
+                            }} value={sale_type}>
+                                <FormControl>
+                                    <SelectTrigger className="focus:ring-[#3BC1CF]">
+                                        <SelectValue placeholder="Select sale type" />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {saleTypes.map((type) => (
+                                        <SelectItem key={type} value={type}>
+                                            {type === 'sale' ? 'Sale Only' : type === 'lease' ? 'Lease Only' : 'Both Sale & Lease'}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                {/* Price */}
                 <FormField
                     control={form.control}
                     name="price"
                     render={({ field }) => (
-                        <FormItem className="max-w-xs">
-                            <FormLabel className="text-sm font-semibold">Actual price ($) *</FormLabel>
+                        <FormItem>
+                            <FormLabel className="text-sm font-semibold">Price ($) *</FormLabel>
                             <FormControl>
                                 <Input
                                     type="number"
@@ -97,75 +95,87 @@ export function PricingSection({ form }: PricingSectionProps) {
                         </FormItem>
                     )}
                 />
-            )}
+            </div>
 
-            {/* Lease-only fields: period, lease price, insurance price */}
-            {lease && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 rounded-lg border p-4 bg-muted/30">
-                    <FormField
-                        control={form.control}
-                        name="leasePeriod"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold">Lease period *</FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value ?? ''}>
+            {/* Lease-specific fields */}
+            {showLeaseFields && (
+                <div className="rounded-lg border p-6 bg-muted/30 space-y-6">
+                    <div>
+                        <h4 className="text-md font-semibold text-[#1974BB] dark:text-[#3BC1CF]">Lease Information</h4>
+                        <p className="text-sm text-muted-foreground mt-1">Required for lease options</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Lease Period */}
+                        <FormField
+                            control={form.control}
+                            name="lease_period"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-sm font-semibold">Lease Period *</FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
+                                        <FormControl>
+                                            <SelectTrigger className="focus:ring-[#3BC1CF]">
+                                                <SelectValue placeholder="Select period" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {leasePeriods.map((period) => (
+                                                <SelectItem key={period} value={period}>
+                                                    {period.charAt(0).toUpperCase() + period.slice(1)}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Lease Price */}
+                        <FormField
+                            control={form.control}
+                            name="lease_price"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-sm font-semibold">Lease Price ($) *</FormLabel>
                                     <FormControl>
-                                        <SelectTrigger className="focus:ring-[#3BC1CF]">
-                                            <SelectValue placeholder="Daily / Monthly / Yearly" />
-                                        </SelectTrigger>
+                                        <Input
+                                            type="number"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                            className="focus-visible:ring-[#3BC1CF]"
+                                            {...field}
+                                        />
                                     </FormControl>
-                                    <SelectContent>
-                                        {leasePeriods.map((period) => (
-                                            <SelectItem key={period} value={period}>
-                                                {period.charAt(0).toUpperCase() + period.slice(1)}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="leasePrice"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold">Lease price ($) *</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="number"
-                                        placeholder="0.00"
-                                        min="0"
-                                        step="0.01"
-                                        className="focus-visible:ring-[#3BC1CF]"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="insurancePrice"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold">Insurance price ($) *</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="number"
-                                        placeholder="0.00"
-                                        min="0"
-                                        step="0.01"
-                                        className="focus-visible:ring-[#3BC1CF]"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Insurance Price */}
+                        <FormField
+                            control={form.control}
+                            name="insurance_price"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-sm font-semibold">Insurance Price ($) *</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            placeholder="0.00"
+                                            min="0"
+                                            step="0.01"
+                                            className="focus-visible:ring-[#3BC1CF]"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                 </div>
             )}
         </div>

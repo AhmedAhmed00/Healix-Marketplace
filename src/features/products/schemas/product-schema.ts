@@ -1,97 +1,100 @@
 import { z } from 'zod'
 
-export const productCategories = [
-  'Electronics',
-  'Furniture',
-  'Smart Home',
-  'Accessories',
-  'Sports',
-  'Home',
-  'Clothing',
-  'Books',
-  'Toys',
-  'Other',
-] as const
-
-export const productStatuses = ['active', 'inactive', 'out_of_stock', 'draft'] as const
-
 /** Lease period options when product is available for lease */
 export const leasePeriods = ['daily', 'monthly', 'yearly'] as const
 export type LeasePeriod = (typeof leasePeriods)[number]
 
-const positiveNumberString = z
-  .string()
-  .min(1, 'Required')
-  .refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Must be a positive number')
-
-const nonNegativeNumberString = z
-  .string()
-  .min(1, 'Required')
-  .refine((val) => !isNaN(Number(val)) && Number(val) >= 0, 'Must be zero or a positive number')
+/** Sale type options */
+export const saleTypes = ['sale', 'lease', 'both'] as const
+export type SaleType = (typeof saleTypes)[number]
 
 export const addProductSchema = z
   .object({
     name: z.string().min(3, 'Product name must be at least 3 characters').max(100, 'Product name must be less than 100 characters'),
-    category: z.enum(productCategories, {
-      required_error: 'Please select a category',
-    }),
     description: z.string().min(10, 'Description must be at least 10 characters').max(500, 'Description must be less than 500 characters'),
-    image: z.any().optional(),
-    lease: z.boolean(),
-    outrightSale: z.boolean(),
-    leasePeriod: z.enum(leasePeriods).optional(),
-    leasePrice: z.string().optional(),
-    insurancePrice: z.string().optional(),
-    price: z.string().optional(),
-    stock: z.string().min(1, 'Stock is required').refine((val) => !isNaN(Number(val)) && Number(val) >= 0, 'Stock must be a non-negative number'),
+    category: z.string({ required_error: 'Category is required' }),
     brand: z.string().optional(),
-  })
-  .refine((data) => data.lease || data.outrightSale, {
-    message: 'Select at least one: Lease or Outright sale',
-    path: ['lease'],
+    sale_type: z.enum(saleTypes, { required_error: 'Sale type is required' }),
+    price: z.string().min(1, 'Price is required'),
+    stock: z.string().min(1, 'Stock is required').refine((val) => !isNaN(Number(val)) && Number(val) >= 0, 'Stock must be a non-negative number'),
+    lease_period: z.enum(leasePeriods).optional(),
+    lease_price: z.string().optional(),
+    insurance_price: z.string().optional(),
+    is_active: z.boolean().default(true),
+    main_image: z.any().optional(),
+    images: z.array(z.any()).optional(),
   })
   .refine(
     (data) => {
-      if (!data.lease && !data.outrightSale) return true
-      return data.price != null && data.price !== '' && !isNaN(Number(data.price)) && Number(data.price) > 0
+      // If sale_type includes lease, lease_period is required
+      if (data.sale_type === 'lease' || data.sale_type === 'both') {
+        return data.lease_period != null && data.lease_period !== undefined
+      }
+      return true
     },
-    { message: 'Actual price is required', path: ['price'] }
+    {
+      message: 'Lease period is required when sale type includes lease',
+      path: ['lease_period'],
+    }
   )
   .refine(
     (data) => {
-      if (!data.lease) return true
-      return (
-        data.leasePeriod != null &&
-        data.leasePeriod !== '' &&
-        data.leasePrice != null &&
-        data.leasePrice !== '' &&
-        !isNaN(Number(data.leasePrice)) &&
-        Number(data.leasePrice) > 0 &&
-        data.insurancePrice != null &&
-        data.insurancePrice !== '' &&
-        !isNaN(Number(data.insurancePrice)) &&
-        Number(data.insurancePrice) >= 0
-      )
+      // If sale_type includes lease, lease_price is required
+      if (data.sale_type === 'lease' || data.sale_type === 'both') {
+        return (
+          data.lease_price != null &&
+          data.lease_price !== '' &&
+          !isNaN(Number(data.lease_price)) &&
+          Number(data.lease_price) > 0
+        )
+      }
+      return true
     },
     {
-      message: 'Lease period, lease price, and insurance price are required when Lease is selected',
-      path: ['leasePrice'],
+      message: 'Lease price is required when sale type includes lease',
+      path: ['lease_price'],
     }
+  )
+  .refine(
+    (data) => {
+      // If sale_type includes lease, insurance_price is required
+      if (data.sale_type === 'lease' || data.sale_type === 'both') {
+        return (
+          data.insurance_price != null &&
+          data.insurance_price !== '' &&
+          !isNaN(Number(data.insurance_price)) &&
+          Number(data.insurance_price) >= 0
+        )
+      }
+      return true
+    },
+    {
+      message: 'Insurance price is required when sale type includes lease',
+      path: ['insurance_price'],
+    }
+  )
+  .refine(
+    (data) => {
+      // Price must be a valid positive number
+      return !isNaN(Number(data.price)) && Number(data.price) > 0
+    },
+    { message: 'Price must be a positive number', path: ['price'] }
   )
 
 export type AddProductFormInput = z.infer<typeof addProductSchema>
 
 export interface AddProductFormData {
   name: string
-  category: (typeof productCategories)[number]
   description: string
-  image?: string | File
-  lease: boolean
-  outrightSale: boolean
-  leasePeriod?: LeasePeriod
-  leasePrice?: number
-  insurancePrice?: number
-  price?: number
-  stock: number
+  category: string
   brand?: string
+  sale_type: SaleType
+  price: string
+  stock: string
+  lease_period?: LeasePeriod
+  lease_price?: string
+  insurance_price?: string
+  is_active: boolean
+  main_image?: File
+  images?: File[]
 }

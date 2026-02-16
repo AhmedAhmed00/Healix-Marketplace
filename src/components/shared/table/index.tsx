@@ -17,6 +17,7 @@ import type { DataTableProps } from './types'
 export function DataTable<TData, TValue>({
   columns,
   data,
+  count,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -39,12 +40,13 @@ export function DataTable<TData, TValue>({
     },
   })
 
+
   return (
     <div className="space-y-4">
       <TableSearch
         value={globalFilter}
         onChange={setGlobalFilter}
-        resultsCount={table.getFilteredRowModel().rows.length}
+        resultsCount={count}
       />
 
       <div className="rounded-md border">
@@ -52,7 +54,7 @@ export function DataTable<TData, TValue>({
           <TableHeader headerGroups={table.getHeaderGroups()} />
           <TableBody
             rows={table.getRowModel().rows}
-            columnsCount={columns.length}
+            columnsCount={count}
           />
         </table>
       </div>
