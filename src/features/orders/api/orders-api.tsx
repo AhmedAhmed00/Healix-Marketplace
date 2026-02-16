@@ -43,3 +43,13 @@ export async function updateOrderStatus(
 export async function deleteOrder(orderId: string | number): Promise<void> {
     await api.delete(`${ENDOPOINTS.ORDERS}${orderId}/`);
 }
+
+export async function acceptOrder(orderId: string | number): Promise<Order> {
+    const response = await api.post(`${ENDOPOINTS.ORDERS}${orderId}/accept/`);
+    return response.data;
+}
+
+export async function rejectOrder(orderId: string | number): Promise<Order> {
+    const response = await api.post(`${ENDOPOINTS.ORDERS}${orderId}/reject/`);
+    return response.data;
+}

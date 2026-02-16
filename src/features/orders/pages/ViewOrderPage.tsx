@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
     Edit,
@@ -11,19 +12,37 @@ import {
     XCircle,
     Phone,
     Mail,
+    Loader2,
+    CheckCircle,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { getStatusConfig } from "../constants/order-status"
 import { useOrder } from "../hooks/use-order"
+import { acceptOrder, rejectOrder } from "../api/orders-api"
+import { useQueryClient } from "@tanstack/react-query"
+import { toast } from "react-toastify"
 import FullPageLoading from "@/components/ui/full-page-loading"
 
 export function ViewOrderPage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
+    const [isAccepting, setIsAccepting] = useState(false)
+    const [isRejecting, setIsRejecting] = useState(false)
+    const [showRejectDialog, setShowRejectDialog] = useState(false)
 
-    const { data: order, isLoading, isError } = useOrder(id)
+    const { data: order, isLoading, isError, refetch } = useOrder(id)
 
     if (isLoading) {
         return <FullPageLoading resource="Order" />
@@ -50,6 +69,50 @@ export function ViewOrderPage() {
 
     const statusConfig = getStatusConfig(summary.status)
 
+    const handleAccept = async () => {
+        if (!id || !order) return
+
+        setIsAccepting(true)
+        try {
+            await acceptOrder(id)
+            toast.success('Order accepted successfully')
+            // Refetch order data and invalidate orders list
+            await refetch()
+            queryClient.invalidateQueries({ queryKey: ['orders'] })
+            queryClient.invalidateQueries({ queryKey: ['order', id] })
+        } catch (error: any) {
+            console.error('Error accepting order:', error)
+            const errorMessage = error?.response?.data?.message || error?.response?.data?.detail || 'Failed to accept order'
+            toast.error(errorMessage)
+        } finally {
+            setIsAccepting(false)
+        }
+    }
+
+    const handleReject = async () => {
+        if (!id || !order) return
+
+        setIsRejecting(true)
+        try {
+            await rejectOrder(id)
+            toast.success('Order rejected successfully')
+            setShowRejectDialog(false)
+            // Refetch order data and invalidate orders list
+            await refetch()
+            queryClient.invalidateQueries({ queryKey: ['orders'] })
+            queryClient.invalidateQueries({ queryKey: ['order', id] })
+        } catch (error: any) {
+            console.error('Error rejecting order:', error)
+            const errorMessage = error?.response?.data?.message || error?.response?.data?.detail || 'Failed to reject order'
+            toast.error(errorMessage)
+        } finally {
+            setIsRejecting(false)
+        }
+    }
+
+    const canAccept = summary.status === 'pending' || summary.status === 'confirmed'
+    const canReject = summary.status === 'pending' || summary.status === 'confirmed'
+
     return (
         <div className="space-y-6">
             {/* ================= HEADER ================= */}
@@ -65,27 +128,46 @@ export function ViewOrderPage() {
                 </div>
 
                 <div className="flex gap-3">
-                    <Button
-                        variant="outline"
-                        className="text-red-500 border-red-200 hover:bg-red-50"
-                        disabled={
-                            summary.status === "cancelled" ||
-                            summary.status === "delivered"
-                        }
-                    >
-                        <XCircle className="w-4 h-4 mr-2" />
-                        Reject
-                    </Button>
+                    {canReject && (
+                        <Button
+                            variant="outline"
+                            className="text-red-500 border-red-200 hover:bg-red-50"
+                            onClick={() => setShowRejectDialog(true)}
+                            disabled={isRejecting || isAccepting}
+                        >
+                            {isRejecting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Rejecting...
+                                </>
+                            ) : (
+                                <>
+                                    <XCircle className="w-4 h-4 mr-2" />
+                                    Reject
+                                </>
+                            )}
+                        </Button>
+                    )}
 
-                    <Button
-                        disabled={
-                            summary.status !== "pending" &&
-                            summary.status !== "confirmed"
-                        }
-                    >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Accept
-                    </Button>
+                    {canAccept && (
+                        <Button
+                            onClick={handleAccept}
+                            disabled={isAccepting || isRejecting}
+                            className="bg-[rgb(var(--brand-primary))] hover:opacity-90"
+                        >
+                            {isAccepting ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                    Accepting...
+                                </>
+                            ) : (
+                                <>
+                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                    Accept
+                                </>
+                            )}
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -329,6 +411,62 @@ export function ViewOrderPage() {
                     )}
                 </div>
             </div>
+
+            {/* Reject Confirmation Dialog */}
+            <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                            <XCircle className="h-5 w-5" />
+                            Reject Order
+                        </DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to reject this order? This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <Alert variant="destructive" className="mt-4">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                            <div className="font-semibold mb-1">Order #{summary.order_number}</div>
+                            <div className="text-sm">
+                                Client: {client.name}
+                                <br />
+                                Total: ${Number(payment.total).toLocaleString()}
+                            </div>
+                        </AlertDescription>
+                    </Alert>
+
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowRejectDialog(false)}
+                            disabled={isRejecting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="destructive"
+                            onClick={handleReject}
+                            disabled={isRejecting}
+                        >
+                            {isRejecting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Rejecting...
+                                </>
+                            ) : (
+                                <>
+                                    <XCircle className="mr-2 h-4 w-4" />
+                                    Reject Order
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
