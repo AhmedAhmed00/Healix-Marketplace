@@ -5,6 +5,7 @@
 
 import { useState, useMemo } from 'react'
 import { Routes, Route } from 'react-router-dom'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -22,12 +23,13 @@ import {
 } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
 import { DataTable } from '@/components/shared/table'
-import { HeadsetIcon, TicketPlus, CalendarIcon, X } from 'lucide-react'
+import { HeadsetIcon, TicketPlus, CalendarIcon, X, MessageSquare } from 'lucide-react'
 import { format } from 'date-fns'
-import { supportTicketColumns, SupportTicketDetails, AddTicketDialog } from './components'
+import { supportTicketColumns, SupportTicketDetails, AddTicketDialog, ChatTab } from './components'
 import { mockSupportTickets } from './data/mockSupport'
 import { TICKET_STATUS_CONFIG } from './types'
 import type { TicketStatus, SupportTicket } from './types'
+import type { ChatMessage } from './components/ChatTab'
 import { cn } from '@/lib/utils'
 
 type StatusFilter = TicketStatus | 'all'
@@ -171,7 +173,7 @@ function SupportTicketsPage() {
       </div>
 
       {/* Tickets Table */}
-      <Card>
+      <Card className="mb-6">
         <CardHeader className="pb-4">
           <div className="flex flex-col gap-4">
             {/* Title and Add Button */}
@@ -323,10 +325,89 @@ function SupportTicketsPage() {
   )
 }
 
+function SupportChatPage() {
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSendMessage = async (message: string) => {
+    // Add user message immediately
+    const userMessage: ChatMessage = {
+      id: `msg-${Date.now()}`,
+      senderName: 'You',
+      senderRole: 'user',
+      message,
+      timestamp: new Date().toISOString(),
+      isRead: true,
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+
+    // Simulate support response (in real app, this would be an API call)
+    setIsLoading(true)
+    setTimeout(() => {
+      const supportMessage: ChatMessage = {
+        id: `msg-${Date.now() + 1}`,
+        senderName: 'Support Team',
+        senderRole: 'support',
+        message: 'Thank you for your message. Our team will get back to you shortly.',
+        timestamp: new Date().toISOString(),
+        isRead: true,
+      }
+      setMessages((prev) => [...prev, supportMessage])
+      setIsLoading(false)
+    }, 1000)
+  }
+
+  return (
+    <div className="space-y-6">
+      <ChatTab messages={messages} onSendMessage={handleSendMessage} isLoading={isLoading} />
+    </div>
+  )
+}
+
+function SupportPage() {
+  const [activeTab, setActiveTab] = useState('tickets')
+
+  return (
+    <div className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="justify-start h-auto p-1 bg-transparent rounded-xl flex-1 flex-wrap gap-2">
+          <TabsTrigger
+            value="tickets"
+            className="relative border border-border px-6 py-3 rounded-lg font-semibold transition-all data-[state=active]:bg-linear-to-r data-[state=active]:from-(--brand-gradient-from) data-[state=active]:to-(--brand-gradient-to) data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-accent"
+          >
+            <div className="flex items-center gap-2">
+              <TicketPlus className="w-4 h-4" />
+              <span>Tickets</span>
+            </div>
+          </TabsTrigger>
+          <TabsTrigger
+            value="chat"
+            className="relative border border-border px-6 py-3 rounded-lg font-semibold transition-all data-[state=active]:bg-linear-to-r data-[state=active]:from-(--brand-gradient-from) data-[state=active]:to-(--brand-gradient-to) data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-accent"
+          >
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              <span>Chat</span>
+            </div>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="tickets" className="mt-6">
+          <SupportTicketsPage />
+        </TabsContent>
+
+        <TabsContent value="chat" className="mt-6">
+          <SupportChatPage />
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+
 export default function SupportModule() {
   return (
     <Routes>
-      <Route index element={<SupportTicketsPage />} />
+      <Route index element={<SupportPage />} />
       <Route path="details/:id" element={<SupportTicketDetails />} />
     </Routes>
   )

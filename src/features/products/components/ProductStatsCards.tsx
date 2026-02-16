@@ -1,34 +1,41 @@
 import { StatsCardGrid, StatsCardProps } from '@/components/shared/stats'
-import { ProductStats } from '../types'
-import { Package, CheckCircle, XCircle, AlertCircle, DollarSign } from 'lucide-react'
+import { ApiProductStats } from '../types'
+import { Package, CheckCircle, AlertCircle, DollarSign } from 'lucide-react'
 
 interface ProductStatsCardsProps {
-  stats: ProductStats
+  stats?: ApiProductStats
+  isLoading?: boolean
 }
 
-export function ProductStatsCards({ stats }: ProductStatsCardsProps) {
+export function ProductStatsCards({ stats, isLoading }: ProductStatsCardsProps) {
+  // Default values when stats are not available
+  const totalProducts = stats?.total_products ?? 0
+  const activeProducts = stats?.active_products ?? 0
+  const outOfStock = stats?.out_of_stock ?? 0
+  const totalInventoryValue = stats?.total_inventory_value ? parseFloat(stats.total_inventory_value) : 0
+
   const cards: StatsCardProps[] = [
     {
       title: 'Total Products',
-      value: stats.total.toLocaleString(),
+      value: totalProducts.toLocaleString(),
       icon: Package,
       colorVariant: 'primary',
     },
     {
       title: 'Active Products',
-      value: stats.active.toLocaleString(),
+      value: activeProducts.toLocaleString(),
       icon: CheckCircle,
       colorVariant: 'primary',
     },
     {
       title: 'Out of Stock',
-      value: stats.outOfStock.toLocaleString(),
+      value: outOfStock.toLocaleString(),
       icon: AlertCircle,
       colorVariant: 'primary',
     },
     {
       title: 'Total Inventory Value',
-      value: `$${stats.totalValue.toLocaleString()}`,
+      value: `$${totalInventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: DollarSign,
       colorVariant: 'primary',
     },

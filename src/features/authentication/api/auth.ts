@@ -17,3 +17,23 @@ export async function loginUser(
 
     return data.data
 }
+
+export interface ChangePasswordRequest {
+    old_password: string;
+    new_password: string;
+}
+
+export interface ChangePasswordResponse {
+    success?: boolean;
+    message?: string;
+}
+
+export async function changePassword(
+    credentials: ChangePasswordRequest
+): Promise<ChangePasswordResponse> {
+    const { data } = await api.post<ChangePasswordResponse>(
+        `${ENDOPOINTS.CHANGE_PASSWORD}`,
+        credentials
+    );
+    return data;
+}

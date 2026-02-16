@@ -18,9 +18,24 @@ export const useCreateProduct = () => {
             toast.success('Product created successfully!');
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error('Failed to create product:', error);
-            toast.error('Failed to create product. Please try again.');
+            
+            const errorData = error?.response?.data
+            const hasFieldErrors = 
+                (errorData?.errors && Object.keys(errorData.errors).length > 0) ||
+                (errorData && typeof errorData === 'object' && 
+                 Object.keys(errorData).some(key => 
+                     key !== 'errors' && key !== 'message' && key !== 'detail' && 
+                     Array.isArray(errorData[key])
+                 ))
+            
+            if (!hasFieldErrors) {
+                const errorMessage = errorData?.message || errorData?.detail || 'Failed to create product. Please try again.'
+                toast.error(errorMessage)
+            } else {
+                toast.error('Please fix the errors in the form')
+            }
         }
     });
 

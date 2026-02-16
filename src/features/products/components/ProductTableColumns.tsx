@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-export const productColumns: ColumnDef<Product>[] = [
+export function createProductColumns(onDelete?: (product: Product) => void): ColumnDef<Product>[] {
+  return [
   {
     accessorKey: 'main_image',
     id: 'image',
@@ -198,10 +199,8 @@ export const productColumns: ColumnDef<Product>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="text-red-600 dark:text-red-400"
-              onClick={() => {
-                console.log('Delete product:', product.id)
-              }}
+              onClick={() => onDelete?.(product)}
+              className="text-red-600 dark:text-red-400 cursor-pointer"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Product
@@ -211,4 +210,8 @@ export const productColumns: ColumnDef<Product>[] = [
       )
     },
   },
-]
+  ]
+}
+
+// Default export for backward compatibility
+export const productColumns = createProductColumns()

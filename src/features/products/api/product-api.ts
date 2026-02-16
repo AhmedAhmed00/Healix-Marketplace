@@ -56,3 +56,7 @@ export async function createProduct(productData: FormData): Promise<Product> {
     });
     return response.data;
 }
+
+export async function deleteProduct(productId: string | number): Promise<void> {
+    await api.delete(`${import.meta.env.VITE_API_URL}${ENDOPOINTS.PRODUCTS}${productId}/`);
+}

@@ -15,26 +15,14 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { AddProductFormInput, leasePeriods, saleTypes } from '../../schemas/product-schema'
-import { useEffect, useState } from 'react'
 
 interface PricingSectionProps {
     form: UseFormReturn<AddProductFormInput>
-    product: AddProductFormInput
+    product?: AddProductFormInput
 }
 
 export function PricingSection({ form, product }: PricingSectionProps) {
-
-
-    const [sale_type, setSale_type] = useState<string>(product.sale_type)
-
-    useEffect(() => {
-        if (product.sale_type) {
-            setSale_type(product.sale_type)
-
-        }
-    }, [product.sale_type])
     const saleType = form.watch('sale_type')
-    console.log(saleType)
     const showLeaseFields = saleType === 'lease' || saleType === 'both'
 
     return (
@@ -52,10 +40,7 @@ export function PricingSection({ form, product }: PricingSectionProps) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel className="text-sm font-semibold">Sale Type *</FormLabel>
-                            <Select onValueChange={(value) => {
-                                field.onChange(value)
-                                setSale_type(value)
-                            }} value={sale_type}>
+                            <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                     <SelectTrigger className="focus:ring-[#3BC1CF]">
                                         <SelectValue placeholder="Select sale type" />

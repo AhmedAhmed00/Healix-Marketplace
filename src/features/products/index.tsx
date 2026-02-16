@@ -1,20 +1,30 @@
+import { useState } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { Card, CardContent } from '@/components/ui/card'
 import { DataTable } from '@/components/shared/table'
-import { ProductStatsCards, productColumns } from './components'
-import { mockProducts, calculateProductStats } from './data/mockProducts'
+import { ProductStatsCards, createProductColumns, DeleteProductDialog } from './components'
 import { PageHeader } from '@/components/shared/page-header'
 import { Package, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AddProductPage } from './pages/AddProductPage'
 import { ViewProductPage } from './pages/ViewProductPage'
 import { useProducts } from './hooks/use-products'
+import { Product } from './types'
 
 export default function ProductsPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const stats = calculateProductStats(mockProducts)
   const { data: products, isLoading, isError } = useProducts();
+  
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
+  const handleDelete = (product: Product) => {
+    setSelectedProduct(product)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const columns = createProductColumns(handleDelete)
 
 
 
@@ -44,14 +54,27 @@ export default function ProductsPage() {
           </div>
 
           {/* Stats Cards */}
-          <ProductStatsCards stats={stats} />
+          <ProductStatsCards stats={products?.stats} isLoading={isLoading} />
 
           {/* Products Table */}
           <Card className="border-none bg-transparent shadow-none hover:shadow-none">
             <CardContent className="px-0">
-              <DataTable columns={productColumns} data={products?.results || []} />
+              <DataTable 
+                columns={columns} 
+                data={products?.results || []} 
+                count={products?.count}
+                manualPagination={true}
+                pageSize={10}
+                isLoading={isLoading}
+              />
             </CardContent>
           </Card>
+          
+          <DeleteProductDialog
+            open={isDeleteDialogOpen}
+            onOpenChange={setIsDeleteDialogOpen}
+            product={selectedProduct}
+          />
         </div>
       )}
 

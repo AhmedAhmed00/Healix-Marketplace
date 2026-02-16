@@ -41,11 +41,19 @@ export interface ProductStats {
   totalValue: number
 }
 
+export interface ApiProductStats {
+  total_products: number
+  active_products: number
+  out_of_stock: number
+  total_inventory_value: string
+}
+
 export interface ApiPaginatedResponse<T> {
   count: number
   next: string | null
   previous: string | null
   results: T[];
+  stats?: ApiProductStats;
 }
 
 export interface UpdateProfilePayload {

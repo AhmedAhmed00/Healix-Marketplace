@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { Order } from "../types"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Eye, RefreshCcw, XCircle } from "lucide-react"
+import { MoreHorizontal, Eye, RefreshCcw, XCircle, Trash2 } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { getStatusConfig } from "../constants/order-status"
 
-export const orderColumns: ColumnDef<Order>[] = [
+export function createOrderColumns(
+  onUpdateStatus?: (order: Order) => void,
+  onDelete?: (order: Order) => void,
+  onCancel?: (order: Order) => void
+): ColumnDef<Order>[] {
+  return [
   {
     id: "order_number",
     accessorFn: (row) => row.order_summary.order_number,
@@ -132,7 +137,10 @@ export const orderColumns: ColumnDef<Order>[] = [
               </Link>
             </DropdownMenuItem>
 
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onUpdateStatus?.(order)}
+              className="cursor-pointer"
+            >
               <RefreshCcw className="mr-2 h-4 w-4" />
               Update Status
             </DropdownMenuItem>
@@ -140,15 +148,31 @@ export const orderColumns: ColumnDef<Order>[] = [
             {isCancellable && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 focus:text-red-600 focus:bg-red-50">
+                <DropdownMenuItem
+                  onClick={() => onCancel?.(order)}
+                  className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+                >
                   <XCircle className="mr-2 h-4 w-4" />
                   Cancel Order
                 </DropdownMenuItem>
               </>
             )}
+            
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => onDelete?.(order)}
+              className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Order
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
     },
   },
-]
+  ]
+}
+
+// Default export for backward compatibility
+export const orderColumns = createOrderColumns(undefined, undefined, undefined)

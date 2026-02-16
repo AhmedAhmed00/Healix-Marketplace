@@ -21,3 +21,25 @@ export async function getOrderById(id: string): Promise<Order> {
     const response = await api.get(`${ENDOPOINTS.ORDERS}${id}`);
     return response.data;
 }
+
+export interface UpdateOrderStatusData {
+    status?: string;
+    payment_status?: string;
+    payment_method?: string;
+    estimated_delivery_date?: string;
+}
+
+export async function updateOrderStatus(
+    orderId: string | number,
+    data: UpdateOrderStatusData
+): Promise<Order> {
+    const response = await api.patch(
+        `${ENDOPOINTS.ORDERS}${orderId}/`,
+        data
+    );
+    return response.data;
+}
+
+export async function deleteOrder(orderId: string | number): Promise<void> {
+    await api.delete(`${ENDOPOINTS.ORDERS}${orderId}/`);
+}

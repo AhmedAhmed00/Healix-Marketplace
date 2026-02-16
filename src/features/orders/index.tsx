@@ -41,6 +41,7 @@ export default function OrdersPage() {
               <OrdersList
                 orders={results}
                 count={count}
+                isLoading={isLoading || isFetching}
                 emptyMessage={
                   searchQuery
                     ? 'No orders match your search'

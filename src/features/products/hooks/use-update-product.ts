@@ -28,9 +28,24 @@ export const useUpdateProduct = (productId?: string) => {
                 queryClient.invalidateQueries({ queryKey: ['product', productId] });
             }
         },
-        onError: (error) => {
+        onError: (error: any) => {
             console.error('Failed to update product:', error);
-            toast.error('Failed to update product. Please try again.');
+            
+            const errorData = error?.response?.data
+            const hasFieldErrors = 
+                (errorData?.errors && Object.keys(errorData.errors).length > 0) ||
+                (errorData && typeof errorData === 'object' && 
+                 Object.keys(errorData).some(key => 
+                     key !== 'errors' && key !== 'message' && key !== 'detail' && 
+                     Array.isArray(errorData[key])
+                 ))
+            
+            if (!hasFieldErrors) {
+                const errorMessage = errorData?.message || errorData?.detail || 'Failed to update product. Please try again.'
+                toast.error(errorMessage)
+            } else {
+                toast.error('Please fix the errors in the form')
+            }
         }
     });
 

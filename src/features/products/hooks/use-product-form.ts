@@ -84,13 +84,50 @@ export function useProductForm({ mode, productId, initialData }: UseProductFormO
 
 function handleApiErrors(error: any, form: any) {
     console.error('API Error:', error)
-    if (error?.response?.data?.errors) {
-        Object.entries(error.response.data.errors).forEach(([field, messages]) => {
+    
+    const errorData = error?.response?.data
+    
+    if (!errorData) return
+    
+    // Handle errors in error.response.data.errors format
+    if (errorData.errors && typeof errorData.errors === 'object') {
+        Object.entries(errorData.errors).forEach(([field, messages]) => {
             form.setError(field as any, {
-                type: 'manual',
+                type: 'server',
                 message: Array.isArray(messages) ? messages[0] : messages as string,
             })
         })
+    }
+    
+    // Handle errors directly on error.response.data (e.g., {"sale_type":["\"sale\" is not a valid choice."]})
+    // Check if errorData has field names that match form fields
+    const formFieldNames = [
+        'name', 'description', 'category', 'brand', 'sale_type', 
+        'price', 'stock', 'lease_period', 'lease_price', 
+        'insurance_price', 'is_active', 'main_image', 'images'
+    ]
+    
+    Object.keys(errorData).forEach((field) => {
+        // Skip if already handled or not a form field
+        if (field === 'errors' || field === 'message' || field === 'detail') return
+        
+        // Check if it's a form field
+        if (formFieldNames.includes(field) && Array.isArray(errorData[field])) {
+            form.setError(field as any, {
+                type: 'server',
+                message: errorData[field][0],
+            })
+        }
+    })
+    
+    // Show general error toast if no field-specific errors were found
+    const hasFieldErrors = 
+        (errorData.errors && Object.keys(errorData.errors).length > 0) ||
+        formFieldNames.some(field => Array.isArray(errorData[field]))
+    
+    if (!hasFieldErrors) {
+        const generalError = errorData.message || errorData.detail || 'Failed to save product. Please check the form for errors.'
+        // Don't show toast here as it's already shown in the mutation hooks
     }
 }
 

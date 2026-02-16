@@ -21,6 +21,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Lock, Eye, EyeOff, Save, Loader2, CheckCircle2, ShieldCheck } from 'lucide-react'
+import { changePassword } from '@/features/authentication/api/auth'
+import { toast } from 'react-toastify'
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -39,7 +41,7 @@ const passwordSchema = z.object({
 type PasswordFormValues = z.infer<typeof passwordSchema>
 
 interface PasswordSectionProps {
-  onSave: (data: { currentPassword: string; newPassword: string }) => void
+  onSave?: (data: { currentPassword: string; newPassword: string }) => void
 }
 
 export function PasswordSection({ onSave }: PasswordSectionProps) {
@@ -61,18 +63,65 @@ export function PasswordSection({ onSave }: PasswordSectionProps) {
   const handleSubmit = async (values: PasswordFormValues) => {
     setIsSaving(true)
     setShowSuccess(false)
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    onSave({
-      currentPassword: values.currentPassword,
-      newPassword: values.newPassword,
-    })
-    setIsSaving(false)
-    setShowSuccess(true)
-    form.reset()
-    
-    // Hide success message after 3 seconds
-    setTimeout(() => setShowSuccess(false), 3000)
+    form.clearErrors()
+
+    try {
+      await changePassword({
+        old_password: values.currentPassword,
+        new_password: values.newPassword,
+      })
+
+      toast.success('Password updated successfully!')
+      setShowSuccess(true)
+      form.reset()
+      onSave?.({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      })
+
+      // Hide success message after 3 seconds
+      setTimeout(() => setShowSuccess(false), 3000)
+    } catch (error: any) {
+      console.error('Error changing password:', error)
+
+      const errorData = error?.response?.data
+
+      // Handle field-specific errors
+      if (errorData && typeof errorData === 'object') {
+        // Handle old_password errors
+        if (errorData.old_password && Array.isArray(errorData.old_password)) {
+          form.setError('currentPassword', {
+            type: 'server',
+            message: errorData.old_password[0],
+          })
+        }
+
+        // Handle new_password errors
+        if (errorData.new_password && Array.isArray(errorData.new_password)) {
+          form.setError('newPassword', {
+            type: 'server',
+            message: errorData.new_password[0],
+          })
+        }
+
+        // Show toast for general errors or if no field-specific errors were found
+        const hasFieldErrors =
+          (errorData.old_password && Array.isArray(errorData.old_password)) ||
+          (errorData.new_password && Array.isArray(errorData.new_password))
+
+        if (!hasFieldErrors) {
+          const generalError = errorData.message || errorData.detail || 'Failed to update password'
+          toast.error(generalError)
+        } else {
+          toast.error('Please fix the errors in the form')
+        }
+      } else {
+        // Fallback for unexpected error format
+        toast.error(error?.response?.data?.message || 'Failed to update password')
+      }
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   const newPassword = form.watch('newPassword')
@@ -112,9 +161,8 @@ export function PasswordSection({ onSave }: PasswordSectionProps) {
               name="currentPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                    Current Password
+                  <FormLabel className="flex items-center gap-2 font-semibold">
+                    <span>Current Password</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -146,9 +194,8 @@ export function PasswordSection({ onSave }: PasswordSectionProps) {
               name="newPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                    New Password
+                  <FormLabel className="flex items-center gap-2 font-semibold">
+                    <span>New Password</span>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
@@ -175,18 +222,16 @@ export function PasswordSection({ onSave }: PasswordSectionProps) {
                       {passwordRequirements.map((req, index) => (
                         <div
                           key={index}
-                          className={`flex items-center gap-2 text-xs ${
-                            req.met
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-muted-foreground'
-                          }`}
+                          className={`flex items-center gap-2 text-xs ${req.met
+                            ? 'text-green-600 dark:text-green-400'
+                            : 'text-muted-foreground'
+                            }`}
                         >
                           <div
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              req.met
-                                ? 'bg-green-600 dark:bg-green-400'
-                                : 'bg-muted-foreground'
-                            }`}
+                            className={`w-1.5 h-1.5 rounded-full ${req.met
+                              ? 'bg-green-600 dark:bg-green-400'
+                              : 'bg-muted-foreground'
+                              }`}
                           />
                           {req.label}
                         </div>
@@ -203,9 +248,8 @@ export function PasswordSection({ onSave }: PasswordSectionProps) {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                    Confirm New Password
+                  <FormLabel className=" inline items-center gap-2 font-semibold">
+                    <p>Confirm New Password</p>
                   </FormLabel>
                   <FormControl>
                     <div className="relative">
