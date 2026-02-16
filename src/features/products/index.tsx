@@ -27,9 +27,6 @@ export default function ProductsPage() {
   const columns = createProductColumns(handleDelete)
 
 
-
-
-
   const isAddPage = location.pathname === '/products/add'
   const isViewPage = location.pathname.includes('/products/view/')
 
